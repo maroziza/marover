@@ -11,7 +11,7 @@ rotate([180,00,0])
 }
 
 */
-use<modellib/lib/lib.scad>
+use<lib.scad>
 
 module eng() {
     cylinder(h=60,d=3.4, center=true, $fn=28); // shaft
