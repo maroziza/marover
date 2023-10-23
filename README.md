@@ -51,5 +51,6 @@ Docs: https://wiki.sipeed.com/hardware/en/maix/m1s/m1s_dock.html
 
 # links
 * [https://github.com/devinzhang91/esp32_sv_tank](https://github.com/devinzhang91/esp32_sv_tank)
+* [docs/resources.md](docs/resources.md)
 
 
