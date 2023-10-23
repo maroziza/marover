@@ -27,11 +27,13 @@ TinyML
 
 
 ArUco markers
-- https://docs.opencv.org/4.x/d5/dae/tutorial_aruco_detection.html
-- https://github.com/danielchandg/aruco-markers
-- https://github.com/hamdaan19/mav_precision_landing
-- https://github.com/jcmellado/js-aruco 
-- https://github.com/bhollis/aruco-marker
+- Project page: https://sourceforge.net/projects/aruco/
+- OpenCV tutor: https://docs.opencv.org/4.x/d5/dae/tutorial_aruco_detection.html
+- Drones landing: https://github.com/hamdaan19/mav_precision_landing
+- Other implemenations:
+  - https://github.com/danielchandg/aruco-markers
+  - https://github.com/jcmellado/js-aruco 
+  - https://github.com/bhollis/aruco-marker
 
 
 QR
