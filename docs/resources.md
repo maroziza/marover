@@ -1,9 +1,10 @@
-# Project examples
+# ESP32
+## Project examples
 
 - https://github.com/GeorgeChiou/ESP32-CAM-MotorShield-V3.0-TANKGO
 - https://github.com/s60sc/ESP32-CAM_MJPEG2SD
 
-# Platform resources
+## Platform resources
 
 RTOS 
 - https://github.com/DiegoPaezA/ESP32-freeRTOS --Rtos apps examples
@@ -11,14 +12,14 @@ RTOS
 LUA (over FreeRTOS)
 - https://github.com/whitecatboard/Lua-RTOS-ESP32
 
-# Tools
+## Tools
 
 - arduino-cli
   - small slow overview: https://www.youtube.com/watch?v=J-qGn1eEidA
   - tips: https://gist.github.com/weshouman/11e291dd4fe52422c89522ce485e29f3
 
 
-# Techs and implementations
+## Techs and implementations
 
 TinyML
 - https://dev.to/tkeyo/tinyml-machine-learning-on-esp32-with-micropython-38a6
@@ -38,3 +39,6 @@ QR
 OpenCV
 - https://github.com/joachimBurket/esp32-opencv
 
+
+# Sipeed
+- python: https://github.com/sipeed/MaixPy
