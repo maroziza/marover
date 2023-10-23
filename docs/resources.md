@@ -27,6 +27,7 @@ TinyML
 
 
 ArUco markers
+- https://docs.opencv.org/4.x/d5/dae/tutorial_aruco_detection.html
 - https://github.com/danielchandg/aruco-markers
 - https://github.com/hamdaan19/mav_precision_landing
 - https://github.com/jcmellado/js-aruco 
