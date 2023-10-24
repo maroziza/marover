@@ -1,51 +1,54 @@
-/*rotate([-90,0,0]) {
-*translate([-100,0,0])
-import("modellib/pcb/Ai-Thinker/ESP-CAM/esp32-cam.stl");
-//ESP-CAM_Body>;
-cube([27.2,40,1.5],center=true);
-translate()
-cylinder(h=10,d=0.5);
+use<lib.scad>
 
-rotate([180,00,0])
+wall = 0.81;
+lay = 0.21;
+lax = 0.41;
 
+/**
+ *  M3 x 20 screw for hex head
+ */
+module screw() {
+    cylinder(d=3,h=20, center=true);
+    translate([0,0,8]) cylinder(d=5.5,h=2, $fn=6);
 }
 
-*/
-use<lib.scad>
 
 module eng() {
     cylinder(h=60,d=3.4, center=true, $fn=28); // shaft
     #cylinder(h=28,d=6.5, $fn=6, center= true); // screw head
-// Wheels 
-// %translate([74,-133.4,-30]) import("sv_tank/PLA_sv_wheels_2x.stl");
 
-translate([0,0,17.2])
-    hull() {
-        cylinder(h=30,d=3.1, $fn=22);
-        translate([10,0])cylinder(h=30,d=3.1, $fn=22);
-    }
-    translate([-7,-5.25,-12])#cube([12.2,10.5,30]);
+    translate([0,0,17.2])
+        hull() {
+            cylinder(h=30,d=3.1, $fn=22);
+            translate([10,0])cylinder(h=30,d=3.1, $fn=22);
+        }
+        translate([-7,-5.25,-12])#cube([12.2,10.5,30]);
 }
+
+/**
+ * Battery section
+ * designed to use one 18650 or double 17400
+ */ 
 module bat() {
-    // Battery section
     rotate([00,90,0]) hull()  {
         translate([5,0]) cylinder(d=19,h=66,center=true);
         translate([0,0]) cylinder(d=19,h=66,center=true);
     }
 }
 
-wall = 0.81;
-lay = 0.21;
-lax = 0.41;
 
+/**
+ * Module for esp32-cam, sipeed m1s dock or default 2xmotor driver
+ * modelled to be compatible for all of this
+ */
 module esp() {
-    cube([28,6.4,40]);
-    #translate([-3.5,3,12]) cylinder(d=3,h=12, center=true);
-    #translate([31.5,3,12]) cylinder(d=3,h=12, center=true);
+    cube([28,6.4,20]);
+    translate([-3.5,3,10]) screw();
+    translate([31.5,3,10]) screw();
 }
 
 module maincube() {
-    translate([-20,-8,-6]) cube([40,78,12]);
+    translate([-20,-16,-6]) cube([40,78+8,12]);
 }
 
 $fn=64;
@@ -66,12 +69,15 @@ rotate([0,180,0]){
                translate([-14,62.2,-10]) esp();
                translate([-14,42.2,-10]) esp();
                translate([-14,6.2,-10]) esp();
+               #translate([-14,-15.55,-10]) esp();
+
 
                translate([0,28,0]) bat();
                translate([0,-2,0]) rotate([180,90]) eng();
                translate([0,56,0]) rotate([0,90]) eng();
            }
        }
+       translate([0,28,0]) bat();
        translate([0,0,-10]) scale([5,5,1]) maincube();
        translate([0,0,13.108]) scale([5,5,1]) maincube();
        translate([11,0,1]) rotate([-90,0,0]) cylinder(d=4,h=35);

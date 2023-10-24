@@ -9,8 +9,10 @@ Assuming ubuntu based system with Arduino IDE v2 installed
 ## linux system 
 This actions should be done once. 
 ```bash
-sudo apt purge brltty modem-manager -y
+sudo apt purge brltty -y
 sudo usermod -a -G dialout $USER
+sudo apt install python3-pip
+pip3 install pyserial
 ```
 
 If you really need modem-manager you can try blacklisting 

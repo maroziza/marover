@@ -19,8 +19,8 @@ Small educational robot platform for $25 base price. Build around 3d print body
 *  [body](model/rover.scad)
 * 2x wheel set [passive + active](model/sv_tank/PLA_sv_wheels_2x.stl)
 * 2x track (eiter [high profile](model/sv_tank/TPU_sv_track1.stl) or [low profile](model/sv_tank/TPU_sv_track2.stl))
-* 2x M4 screw
-* 2x M4 nuts
+* 2x M3 screw
+* 2x M3 nuts
 * 2x N20 motor
 *  double H-bridge pwm controller
 * 1S of 2S battery
@@ -51,6 +51,9 @@ Docs: https://wiki.sipeed.com/hardware/en/maix/m1s/m1s_dock.html
 
 # links
 * [https://github.com/devinzhang91/esp32_sv_tank](https://github.com/devinzhang91/esp32_sv_tank)
+* [https://github.com/s60sc/ESP32-CAM_MJPEG2SD](https://github.com/s60sc/ESP32-CAM_MJPEG2SD)
+* [https://github.com/whitecatboard/Lua-RTOS-ESP32](https://github.com/whitecatboard/Lua-RTOS-ESP32)
 * [docs/resources.md](docs/resources.md)
+
 
 
