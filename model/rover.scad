@@ -125,7 +125,7 @@ translate([-14,-8,-7]) scale([0.22, 0.22, 0.1]) rotate([0,180,270])cube([128,128
 }
 
 translate([-50,-20,-21.3]) cube([100,100,12]);
-translate([0,70,-8]) #rotate([0,180,90]) scale([.3,.3]) linear_extrude(2){
+translate([0,70,-8.6]) #rotate([0,180,90]) scale([.3,.3]) linear_extrude(.8){
 text("https://github.com/");
 translate([0,-15,0]) #text("maroziza/marover");
 }

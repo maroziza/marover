@@ -3,17 +3,14 @@
 # License: GNU GPL v3 (or later)
 ## make all		Generate STL for each SCAD file
 ## make gcode		Generate gcode for each SCAD file
-rover_bottom.stl: rover.scad lib.scadl
-rover_body.stl: rover.scad lib.scadl
+
+rover_bottom.stl: rover_bottom.scad rover.scad lib.scadl
+rover_body.stl: rover_body.scad rover.scad lib.scadl
 
 
-
-
-DIRS = src src/subdir1 src/subdir2
-SEARCHC = $(addsuffix /*.c ,$(DIRS))
-SEARCHCPP = $(addsuffix /*.cpp ,$(DIRS))
+DIRS = .
+SEARCHC = $(addsuffix /*.scad ,$(DIRS))
 SRCS = $(wildcard $(SEARCHC))
-SRCS += $(wildcard $(SEARCHCPP))
 
 ## SCAD Compiler
 SCADC?=openscad
