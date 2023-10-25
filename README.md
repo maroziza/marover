@@ -16,8 +16,9 @@ Small educational robot platform for $25 base price. Build around 3d print body
 
 # BOM
 ## body
-*  [body](model/rover.scad)
-* 2x wheel set [passive + active](model/sv_tank/PLA_sv_wheels_2x.stl)
+*  [body](model/rover_body.stl)
+*  [bottom plate](model/rover_bottom.stl)
+* wheels: 2x [passive](model/sv_tank/PLA_sv_wheels_passive.stl) and 2x [active](model/sv_tank/PLA_sv_wheels_active.stl)
 * 2x track (eiter [high profile](model/sv_tank/TPU_sv_track1.stl) or [low profile](model/sv_tank/TPU_sv_track2.stl))
 * 2x M3 screw
 * 2x M3 nuts
