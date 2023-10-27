@@ -1,2 +1,8 @@
 use <rover.scad>
-rotate([0,180,0])marover_body();
+$BOXY=true;
+rotate([0,0,90])
+
+intersection() {
+    marover();
+    translate([-50, -50 , -7.5]) cube([100,100,14]);
+}

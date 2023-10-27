@@ -5,7 +5,10 @@
 - https://github.com/s60sc/ESP32-CAM_MJPEG2SD
 
 ## Platform resources
+ESP FC, based on betaflight sources
 
+- https://github.com/rtlopez/esp-fc/tree/master
+- 
 RTOS 
 - https://github.com/DiegoPaezA/ESP32-freeRTOS --Rtos apps examples
 

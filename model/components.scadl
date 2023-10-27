@@ -1,0 +1,74 @@
+module incel(D,H) {
+    if(!$BOXY) {
+        cylinder(d=D, h=H, center=true);
+    } else {
+        cube([D,D,H], center=true);
+    } 
+}
+/**
+ *  M3 x 24 screw for hex head
+ */
+module screw() {
+    #translate([0,0,-10]) cylinder(d=3.3,h=26,center=false,$fn=16);
+    
+    #translate([0,0,10-1]) cube([5.8,6.5,3.1],center=true);
+    #translate([0,0,15]) cube([5.8,6.5,3.1],center=true);
+
+    #translate([0,0,-13]) cylinder(d=6.7,h=5);
+}
+
+// 12 height x10 width engine itself
+// 13
+module eng() {
+    translate([0,0,-2.5])rotate([0,90,0]) {
+        // screw
+        translate([0,0,-10]) rotate([0,180,0]){
+        if(!$BOXY) {
+            cylinder(h=6,d=6.7, $fn=6); // screw
+            incel(3.2, 26, $fn=26);
+        } else {
+            translate([0,-2.75]) cube([7.5, 5.5, 5.5]);
+            translate([-5,-2.75,0]) cube([9, 3.2, 26]);
+        }
+            
+            
+            translate([-4,-2.75,-10]) cube([8, 5.5, 9]);
+ 
+//            #cylinder(h=26,d=3.2,  $fn=28); // shaft
+        }
+                // shaft
+        translate([0,0,17.2]) difference() hull() {
+            translate([-3,0])incel(4, 30,$fn=22);
+            translate([4,0])incel(4,30, $fn=22);
+        }
+    }
+    
+    // motor body
+    translate([-10,-5.5,-8.5])cube([30,11, 13]);
+
+}
+
+/**
+ * Battery section
+ * designed to use one 18650 or double 17400
+ */ 
+module bat() {
+    rotate([00,90,0]) hull() {
+        translate([0,1,0]) incel(18,68);
+        translate([0,-1,0]) incel(18,68);
+    }
+}
+
+
+/**
+ * Module for esp32-cam, sipeed m1s dock or default 2xmotor driver
+ * modelled to be compatible for all of this
+ */
+module esp() {
+    translate([-14,-4,-7]) cube([28,8,32]);
+    translate([-14,-4,-9]) cube([28,4,40]);
+    translate([-18,0,0]) screw();
+    translate([18,0,0]) screw();
+}
+//$BOXY=true;
+eng();

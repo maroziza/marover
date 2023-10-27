@@ -54,6 +54,7 @@ Docs: https://wiki.sipeed.com/hardware/en/maix/m1s/m1s_dock.html
 * [https://github.com/devinzhang91/esp32_sv_tank](https://github.com/devinzhang91/esp32_sv_tank)
 * [https://github.com/s60sc/ESP32-CAM_MJPEG2SD](https://github.com/s60sc/ESP32-CAM_MJPEG2SD)
 * [https://github.com/whitecatboard/Lua-RTOS-ESP32](https://github.com/whitecatboard/Lua-RTOS-ESP32)
+* [https://github.com/rtlopez/esp-fc/tree/master](https://github.com/rtlopez/esp-fc/tree/master)
 * [docs/resources.md](docs/resources.md)
 
 
