@@ -8,12 +8,12 @@ module maincube() {
     cube([40,90,18], center=true);
 }
 
-
+$fn=64;
 module marover() {
     difference() {
         union() {
            difference() {
-               outerWalls(1.19)  bat();
+               outerWalls(1.19)  bat($fn=64);
                //18650 battery screws
            }
            
@@ -38,7 +38,7 @@ module marover() {
 
        translate([0,0,4]) {
        rotate([0,90,0]) {
-            translate([-1,0,0])incel(3,74); 
+            translate([-1,0,0])incel(3,74,$fn=16); 
        
             translate([0,-19,0]) incel(5, 60);
             translate([0,+19,0]) incel(5, 60);
