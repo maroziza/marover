@@ -93,7 +93,7 @@ module complex_wheel(wheel_radius=14, wheel_width=9.73) {
                 translate([0,0,-(wheel_width - disk_width) / 2 + fillet_radius/2])
                     cylinder(h = fillet_radius/2, r = (hub_radius - fillet_radius)/2 +0.1 , center = true);
                 
-                translate([0,0,-(wheel_width - disk_width) / 2 + fillet_radius/2])
+                translate([0,0,-(wheel_width - disk_width) / 2 + fillet_radius/2]) {
                     rotate_extrude() {
                         translate([(hub_radius - fillet_radius) /2,0]) {
                             intersection() {
@@ -102,9 +102,17 @@ module complex_wheel(wheel_radius=14, wheel_width=9.73) {
                             }
                         }
                     }
+                }
+                // Stopper bolt hole
+                translate([0,0,1]) {
+                    rotate([90,0,0]){
+                            cylinder(h=wheel_radius, r=2);
+                    }
+                }
             }
         }
     }
 }
+
 rotate([180,0,0])
     complex_wheel();
