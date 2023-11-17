@@ -29,6 +29,7 @@ TinyML
 - https://www.hackster.io/mjrobot/esp32-cam-tinyml-image-classification-fruits-vs-veggies-4ab970
 
 
+
 ArUco markers
 - Project page: https://sourceforge.net/projects/aruco/
 - OpenCV tutor: https://docs.opencv.org/4.x/d5/dae/tutorial_aruco_detection.html
@@ -37,6 +38,10 @@ ArUco markers
   - https://github.com/danielchandg/aruco-markers
   - https://github.com/jcmellado/js-aruco 
   - https://github.com/bhollis/aruco-marker
+
+AprilTags
+
+- Similar to ArUco (but a little bit simpler?): https://docs.wpilib.org/en/stable/docs/software/vision-processing/apriltag/apriltag-intro.html
 
 
 QR
