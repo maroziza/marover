@@ -171,7 +171,8 @@ void startWebControlServer(){
         .user_ctx  = NULL
     };
 
-    Serial.printf("Starting chasis control server on port: '%d'\n", config.server_port);
+    // config.core_id = 1;
+    Serial.printf("Starting control server on port: '%d'\n", config.server_port);
     if (httpd_start(&input_httpd, &config) == ESP_OK) {
         esp_err_t ret;
         ret = httpd_register_uri_handler(input_httpd, &battery_uri);
@@ -186,3 +187,7 @@ void startWebControlServer(){
 }
 
 
+// void stopWebControlServer(){
+//     int result = httpd_stop(&input_httpd);
+//     Serial.printf("Stopped configuration server: %d \n", result);
+// }

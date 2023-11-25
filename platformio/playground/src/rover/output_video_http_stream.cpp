@@ -276,3 +276,9 @@ void startStreamServer(){
 }
 
 
+// void stopStreamServer(){
+//     int result = httpd_stop(&stream_httpd);
+//     Serial.printf("Stopped video stream server: %d \n", result);
+// }
+
+
