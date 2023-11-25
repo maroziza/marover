@@ -68,7 +68,6 @@ void startPs3Input(){
     Ps3.attachOnConnect(onConnect);
     Ps3.begin();
     String address = Ps3.getAddress();
-    Serial.printf("BT Mac: %s\n", address);
-    // Serial.println(address);
-    Serial.println("Ready.");
+    Serial.print("BT Ready for connection. Mac: ");
+    Serial.println(address);
 }

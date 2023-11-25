@@ -73,7 +73,8 @@ extern int gpRf = 14; // Right Wheel Forward
 extern int gpLed =  4; // Light
 extern String WiFiAddr ="";
 
-void startCameraServer();
+void startWebControlServer();
+void startStreamServer();
 void startPs3Input();
 
 void setup() {
@@ -159,14 +160,13 @@ void setup() {
   Serial.println("");
   Serial.println("WiFi connected");
 
-  startCameraServer();
-  startPs3Input();
+  startWebControlServer();
+  startStreamServer();
+  // startPs3Input();
 
 #if STA_MODE
-  Serial.println(WiFi.localIP());
   WiFiAddr = WiFi.localIP().toString();
 #else
-  Serial.println(WiFi.softAPIP());
   WiFiAddr = WiFi.softAPIP().toString();
 #endif
   Serial.print("Camera Ready! Use 'http://");
