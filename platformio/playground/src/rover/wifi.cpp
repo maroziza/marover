@@ -13,15 +13,19 @@ const char* password = "qwer1234";
 extern String WiFiAddr = "";
 
 void startWifi(){
-Serial.println("Startting WiFI");    
+Serial.print("Startting WiFI: ");    
 #if STA_MODE
   WiFi.begin(ssid, password);
+  Serial.print("connecting to ");
+  Serial.print(ssid);
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
     Serial.print(".");
   }
+  
 #else
-   
+  Serial.print("start AP ");
+  Serial.print(ssid);
   WiFi.softAP(ssid, password);
 #endif
 
@@ -31,9 +35,7 @@ Serial.println("Startting WiFI");
 #else
   WiFiAddr = WiFi.softAPIP().toString();
 #endif
-  Serial.print("WiFi Ready! Use 'http://");
-  Serial.print(WiFiAddr);
-  Serial.println("' to connect");
+Serial.println(". Done!");
 }
 
 

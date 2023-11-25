@@ -269,10 +269,14 @@ void startStreamServer(){
 
     config.server_port += 1;
     config.ctrl_port += 1;
-    Serial.printf("Starting video stream server on port: '%d'\n", config.server_port);
     if (httpd_start(&stream_httpd, &config) == ESP_OK) {
         httpd_register_uri_handler(stream_httpd, &stream_uri);
+        Serial.print("Video stream http://");
+        Serial.print(WiFiAddr);
+        Serial.printf(":%d/stream", config.server_port);
+        Serial.println();
     }
+
 }
 
 

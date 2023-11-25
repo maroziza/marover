@@ -172,7 +172,7 @@ void startWebControlServer(){
     };
 
     // config.core_id = 1;
-    Serial.printf("Starting control server on port: '%d'\n", config.server_port);
+    
     if (httpd_start(&input_httpd, &config) == ESP_OK) {
         esp_err_t ret;
         ret = httpd_register_uri_handler(input_httpd, &battery_uri);
@@ -183,6 +183,10 @@ void startWebControlServer(){
         ret = httpd_register_uri_handler(input_httpd, &left_uri);
         ret = httpd_register_uri_handler(input_httpd, &right_uri);
         ret = httpd_register_uri_handler(input_httpd, &led_uri);        
+        Serial.print("Control http://");
+        Serial.print(WiFiAddr);
+        Serial.printf(":%d/", config.server_port);
+        Serial.println();
     }
 }
 
