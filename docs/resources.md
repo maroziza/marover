@@ -51,5 +51,8 @@ OpenCV
 - https://github.com/joachimBurket/esp32-opencv
 
 
+Bluetooth
+- BLE: https://github.com/BigJBehr/ESP32-Bluetooth-BLE-Remote-Control
+
 # Sipeed
 - python: https://github.com/sipeed/MaixPy

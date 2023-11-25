@@ -16,15 +16,11 @@
 #include "esp_camera.h"
 #include "img_converters.h"
 #include "Arduino.h"
+#include "chasis.h"
 
-extern int gpLb;
-extern int gpLf;
-extern int gpRb;
-extern int gpRf;
-extern int gpLed;
+
 extern String WiFiAddr;
 
-void WheelAct(int nLf, int nLb, int nRf, int nRb);
 
 typedef struct {
         size_t size; //number of values used for filtering
@@ -338,32 +334,23 @@ static esp_err_t index_handler(httpd_req_t *req){
 }
 
 static esp_err_t go_handler(httpd_req_t *req){
-    WheelAct(HIGH, LOW, HIGH, LOW);
-    Serial.println("Go");
+    chasis_forward();
     httpd_resp_set_type(req, "text/html");
     return httpd_resp_send(req, "OK", 2);
 }
 static esp_err_t back_handler(httpd_req_t *req){
-    WheelAct(LOW, HIGH, LOW, HIGH);
-    Serial.println("Back");
+    chasis_back();
     httpd_resp_set_type(req, "text/html");
     return httpd_resp_send(req, "OK", 2);
 }
 
 static esp_err_t left_handler(httpd_req_t *req){
-    WheelAct(LOW, HIGH, HIGH, LOW);
-
-    // WheelAct(HIGH, LOW, LOW, HIGH);
-    Serial.println("Left");
+    chasis_left();
     httpd_resp_set_type(req, "text/html");
     return httpd_resp_send(req, "OK", 2);
 }
 static esp_err_t right_handler(httpd_req_t *req){
-    // WheelAct(LOW, HIGH, HIGH, LOW);
-
-    WheelAct(HIGH, LOW, LOW, HIGH);
-
-    Serial.println("Right");
+    chasis_right();
     httpd_resp_set_type(req, "text/html");
     return httpd_resp_send(req, "OK", 2);
 }
@@ -378,13 +365,15 @@ static esp_err_t stop_handler(httpd_req_t *req){
 static esp_err_t led_handler(httpd_req_t *req){
     static bool led = false;
     if(led){
-      digitalWrite(gpLed, LOW);
-      Serial.println("LED OFF");
       led = false;
+
+      light(led);  
+      Serial.println("LED OFF");
     } else {
-      digitalWrite(gpLed, HIGH);
-      Serial.println("LED ON");
-      led = true;
+       led = true;
+       light(led);
+       Serial.println("LED ON");
+
     }
     httpd_resp_set_type(req, "text/html");
     return httpd_resp_send(req, "OK", 2);
@@ -509,10 +498,4 @@ void startCameraServer(){
     }
 }
 
-void WheelAct(int nLf, int nLb, int nRf, int nRb)
-{
- digitalWrite(gpLf, nLf);
- digitalWrite(gpLb, nLb);
- digitalWrite(gpRf, nRf);
- digitalWrite(gpRb, nRb);
-}
+

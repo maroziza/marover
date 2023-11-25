@@ -15,8 +15,6 @@
 #define STA_MODE 0
 
 #if STA_MODE
-// const char* ssid = "HUAWEI-C1CE";
-// const char* password = "88888888";
 const char* ssid = "YOUR SSID";
 const char* password = "YOUR PASSWD";
 #else
@@ -76,6 +74,7 @@ extern int gpLed =  4; // Light
 extern String WiFiAddr ="";
 
 void startCameraServer();
+void startPs3Input();
 
 void setup() {
   Serial.begin(115200);
@@ -161,6 +160,7 @@ void setup() {
   Serial.println("WiFi connected");
 
   startCameraServer();
+  startPs3Input();
 
 #if STA_MODE
   Serial.println(WiFi.localIP());
