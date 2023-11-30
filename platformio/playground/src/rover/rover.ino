@@ -6,6 +6,7 @@
 #define WHEELS_LAYOUT 0
 
 #if WHEELS_LAYOUT
+
 // GPIO Setting
 extern int gpLb = 12; // Left Wheel Back
 extern int gpLf = 13; // Left Wheel Forward
@@ -43,6 +44,7 @@ void setup() {
   digitalWrite(gpRf, LOW);
   digitalWrite(gpLed, LOW);
 
+  // initFS();
 
   initCamera();
    //try connect BT controller

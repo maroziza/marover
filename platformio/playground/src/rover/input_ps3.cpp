@@ -39,6 +39,45 @@ static void  notify()
         nRb = Ps3.data.button.r2 && !Ps3.data.button.r1 ? HIGH : LOW;
     }
 
+
+
+    int x = abs(Ps3.data.analog.stick.lx) > abs(Ps3.data.analog.stick.rx) ? Ps3.data.analog.stick.lx : Ps3.data.analog.stick.rx ;
+    int y = abs(Ps3.data.analog.stick.ly) > abs(Ps3.data.analog.stick.ry) ? Ps3.data.analog.stick.ly : Ps3.data.analog.stick.ry ; 
+
+    int xMod = abs(x);
+    int yMod = abs(y);
+    if (xMod > 30 || yMod > 30){
+        if (xMod > yMod) {
+            if(x > 0) {
+                //right
+                nLf = HIGH;
+                nLb = LOW;
+                nRf = LOW;
+                nRb = HIGH; 
+            } else {
+                //left
+                nLf = LOW;
+                nLb = HIGH;
+                nRf = HIGH;
+                nRb = LOW;
+            }
+        } else {
+            if (y < 0){
+                nLf = HIGH;
+                nLb = LOW;
+                nRf = HIGH;
+                nRb = LOW;
+            } else {
+                nLf = LOW;
+                nLb = HIGH;
+                nRf = LOW;
+                nRb = HIGH;
+            }
+
+        }
+    }
+
+
     WheelAct(nLf, nLb, nRf, nRb);
          
     if( nLf > 0 ){
