@@ -56,3 +56,12 @@ Bluetooth
 
 # Sipeed
 - python: https://github.com/sipeed/MaixPy
+
+
+## Supplimentary models
+- PS3 smartphone mount:     https://www.thingiverse.com/thing:618726
+- PS3 joystick gopro mount: https://www.thingiverse.com/thing:2733267
+- PS3 joystick precision sticks: https://www.thingiverse.com/thing:2307743
+
+
+

@@ -44,7 +44,7 @@ module eng() {
     }
     
     // motor body
-    translate([-10,-5.5,-8.5])cube([30,11, 13]);
+    translate([-10,-5.5,-8.5])
 
 }
 

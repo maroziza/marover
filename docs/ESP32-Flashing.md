@@ -6,6 +6,10 @@ Assuming ubuntu based system with Arduino IDE v2 installed
 
 # Preparation 
 
+## windows system
+* [CH340 usb-serial converter driver](https://sparks.gogo.co.nz/ch340.html)
+
+
 ## linux system 
 This actions should be done once. 
 ```bash

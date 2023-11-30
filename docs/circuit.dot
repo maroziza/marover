@@ -1,0 +1,49 @@
+digraph Marover {
+rankdir=LR
+   subgraph cluster_battery {
+        plus
+        minus
+   }
+subgraph cluster_espcam {
+edge [style=invis];
+v33 -> v5
+rxd2 -> vgnd
+gpio0 ->  gpio12
+gnd -> gpio13
+vcc -> gpio15
+rxd0 -> gpio14
+txd0 -> gpio2
+tgnd -> gpio4
+
+}
+
+   subgraph cluster_switch {
+   in_a1 -> out_a -> gnd
+   in_a2 -> out_a
+   in_b1 -> out_b -> gpio0
+   in_b2 -> out_b
+   }
+
+   subgraph cluster_usb {
+   usb_vcc usb_gnd    usb_tx    usb_rx
+
+   }
+
+   subgraph cluster_charger {
+   usb_vcc -> charger_in_plus ->  charger_bat_plus -> plus
+   usb_gnd -> charger_in_minus ->  charger_bat_minus -> minus
+   }
+
+   subgraph cluster_debugger {
+      usb_tx -> usb_debugger_tx -> debugger_tx -> rxd0
+      usb_rx -> usb_debugger_rx -> debugger_rx -> txd0
+
+   }
+   subgraph cluster_tbs {
+   crossfire_rx
+   crossfire_tx -> rxd2
+   crossfire_vcc
+   crossfire_gnd
+   }
+
+}
