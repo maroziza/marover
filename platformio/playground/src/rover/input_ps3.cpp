@@ -6,42 +6,55 @@
 
 static void  notify()
 {
+    int nLf = LOW;
+    int nLb = LOW;
+    int nRf = LOW;
+    int nRb = LOW;
+
     //--------------- Digital D-pad button events --------------
     if(Ps3.data.button.up) {
-        chasis_forward();
+        nLf = HIGH;
+        nLb = LOW;
+        nRf = HIGH;
+        nRb = LOW;
     } else  if(Ps3.data.button.down) {
-        chasis_back();
+        nLf = LOW;
+        nLb = HIGH;
+        nRf = LOW;
+        nRb = HIGH;
     } else if (Ps3.data.button.left) {
-        chasis_left();
+        nLf = LOW;
+        nLb = HIGH;
+        nRf = HIGH;
+        nRb = LOW;
     } else if (Ps3.data.button.right) {
-        chasis_right();
+        nLf = HIGH;
+        nLb = LOW;
+        nRf = LOW;
+        nRb = HIGH;
     } else if (Ps3.data.button.l1 || Ps3.data.button.r1 || Ps3.data.button.l2  || Ps3.data.button.r2 ) {
-        int nLf = Ps3.data.button.l1 ? HIGH : LOW;
-        int nLb = Ps3.data.button.l2 && !Ps3.data.button.l1 ? HIGH : LOW;
-        int nRf = Ps3.data.button.r1 ? HIGH : LOW;
-        int nRb = Ps3.data.button.r2 && !Ps3.data.button.r1 ? HIGH : LOW;
-
-        WheelAct(nLf, nLb, nRf, nRb);
-         
-        if( nLf > 0 ){
-            Serial.println("Left Track: Forward");
-        } 
-        if( nLb > 0 ){
-            Serial.println("Left Track: Back");
-        } 
-
-        if( nRf > 0 ){
-            Serial.println("Right Track: Forward");
-        } 
-
-        if( nRb > 0 ){
-            Serial.println("Right Track: Back");
-        } 
-        
+        nLf = Ps3.data.button.l1 ? HIGH : LOW;
+        nLb = Ps3.data.button.l2 && !Ps3.data.button.l1 ? HIGH : LOW;
+        nRf = Ps3.data.button.r1 ? HIGH : LOW;
+        nRb = Ps3.data.button.r2 && !Ps3.data.button.r1 ? HIGH : LOW;
     }
-    //  else {
-    //     Serial.print("."); 
-    // }
+
+    WheelAct(nLf, nLb, nRf, nRb);
+         
+    if( nLf > 0 ){
+        Serial.println("Left Track: Forward");
+    } 
+    if( nLb > 0 ){
+        Serial.println("Left Track: Back");
+    } 
+
+    if( nRf > 0 ){
+        Serial.println("Right Track: Forward");
+    } 
+
+    if( nRb > 0 ){
+        Serial.println("Right Track: Back");
+    } 
 
 }
 
