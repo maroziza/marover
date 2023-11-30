@@ -80,26 +80,13 @@ static esp_err_t right_handler(httpd_req_t *req){
 }
 
 static esp_err_t stop_handler(httpd_req_t *req){
-    WheelAct(LOW, LOW, LOW, LOW);
-    Serial.println("Stop");
+    chasis_stop();
     httpd_resp_set_type(req, "text/html");
     return httpd_resp_send(req, "OK", 2);
 }
 
 static esp_err_t led_handler(httpd_req_t *req){
-    static bool led = false;
-    if(led){
-      led = false;
-
-      light(led);  
-      Serial.println("LED OFF");
-    } else {
-       led = true;
-       light(led);
-       Serial.println("LED ON");
-
-    }
-    httpd_resp_set_type(req, "text/html");
+    chasis_light(); 
     return httpd_resp_send(req, "OK", 2);
 }
 

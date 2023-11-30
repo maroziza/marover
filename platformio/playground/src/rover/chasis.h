@@ -10,6 +10,6 @@ void chasis_back();
 
 void WheelAct(int nLf, int nLb, int nRf, int nRb);
 
-void light(bool on);
+void chasis_light();
 
 
