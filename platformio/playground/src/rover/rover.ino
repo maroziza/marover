@@ -1,7 +1,7 @@
 #include "esp_camera.h"
 #include "modules.h"
 #include <Arduino.h>
-
+#include "esp32/QuickJS.h"
 
 #define WHEELS_LAYOUT 0
 
@@ -23,7 +23,10 @@ extern int gpRf = 14; // Right Wheel Forward
 #endif
 
 extern int gpLed =  4; // Light
-
+ESP32QuickJS qjs;
+static const char *jscode = R"CODE(
+  console.log('Hello, JavaScript!');
+)CODE";
 void setup() {
   Serial.begin(115200);
   Serial.setDebugOutput(true);
@@ -45,6 +48,8 @@ void setup() {
   digitalWrite(gpLed, LOW);
 
   // initFS();
+  qjs.begin();
+  qjs.exec(jscode);
 
   initCamera();
    //try connect BT controller
@@ -58,5 +63,8 @@ void setup() {
 }
 
 void loop() {
+  qjs.loop(); // For timer, async, etc.
   // vTaskDelay(50/ portTICK_PERIOD_MS );
 }
+
+
