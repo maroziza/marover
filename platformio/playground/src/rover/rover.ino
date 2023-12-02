@@ -1,7 +1,7 @@
 #include "esp_camera.h"
 #include "modules.h"
 #include <Arduino.h>
-#include "esp32/QuickJS.h"
+#include "config.h"
 
 #define WHEELS_LAYOUT 0
 
@@ -23,10 +23,18 @@ extern int gpRf = 14; // Right Wheel Forward
 #endif
 
 extern int gpLed =  4; // Light
-ESP32QuickJS qjs;
-static const char *jscode = R"CODE(
-  console.log('Hello, JavaScript!');
-)CODE";
+
+
+void stats(String msg)
+{
+    uint32_t heap =  ESP.getFreeHeap() * 100 / ESP.getHeapSize();
+    u_int32_t minHeap = ESP.getMinFreeHeap() * 100 / ESP.getHeapSize();
+    uint32_t psRam =  ESP.getFreePsram() * 100 / ESP.getPsramSize();
+    uint16_t maxHeap = ESP.getMaxAllocHeap()* 100 / ESP.getHeapSize();
+    Serial.print(msg);
+    Serial.printf(" -> Stats%: free heap: %u - min free heap: %u - max free heap block: %u - free psram: %u\n", heap, minHeap, maxHeap,  psRam);
+}
+
 void setup() {
   Serial.begin(115200);
   Serial.setDebugOutput(true);
@@ -47,23 +55,42 @@ void setup() {
   digitalWrite(gpRf, LOW);
   digitalWrite(gpLed, LOW);
 
-  // initFS();
-  qjs.begin();
-  qjs.exec(jscode);
+  stats("Initial");
+  initFS();
+  stats("FS");
+
+#if CONFIG_MAROVER_QUICK_JS
+  startJS();
+  stats("JS");
+#endif  
 
   initCamera();
+  stats("Camera");
    //try connect BT controller
-  bool bt_connected = startPs3InputWithTimeout(5);
+  bool bt_connected = false;
+
+#if CONFIG_MAROVER_PS3_BT  
+  startPs3InputWithTimeout(5);
+  stats("PS3 BT");
+#endif
 
    //if no controller connected, start web interface
   if(!bt_connected) {
-      startWebServicesAndWifi();
+      startWifi();
+      stats("WiFi");
+      startAsyncWebServer();
+      stats("Async Web Server");
   }
 
 }
 
 void loop() {
-  qjs.loop(); // For timer, async, etc.
+
+#if CONFIG_MAROVER_QUICK_JS
+  loopJS(); 
+#endif  
+
+// For timer, async, etc.
   // vTaskDelay(50/ portTICK_PERIOD_MS );
 }
 

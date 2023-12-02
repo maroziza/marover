@@ -1,13 +1,14 @@
 #include <WiFi.h>
+#include "config.h"
 
-#define STA_MODE 0
+#define STA_MODE CONFIG_MAROVER_WIFI_STA_MODE
 
 #if STA_MODE
-const char* ssid = "YOUR SSID";
-const char* password = "YOUR PASSWD";
+const char* ssid = CONFIG_MAROVER_WIFI_SSID;
+const char* password = CONFIG_MAROVER_WIFI_PWD;
 #else
-const char* ssid = "esp32-sv";
-const char* password = "qwer1234";
+const char* ssid = CONFIG_MAROVER_AP_WIFI_SSID;
+const char* password = CONFIG_MAROVER_AP_WIFI_PWD;
 #endif
 
 extern String WiFiAddr = "";

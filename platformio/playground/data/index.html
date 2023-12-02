@@ -1,0 +1,40 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<script>var xhttp = new XMLHttpRequest();</script>
+<script>function getsend(arg) {
+    xhttp.open('GET', arg + '?' + new Date().getTime(), true);
+    xhttp.send()
+} </script>
+<script>function getbattery() {
+    xhttp.open('GET', 'battery', false);
+    xhttp.send();
+    console.log(xhttp.responseText);
+    document.getElementById("battery").innerHTML = xhttp.responseText
+} </script>
+<script type="text/javascript">var timer = setInterval(function () {
+    getbattery();
+}, 5 * 1000); </script>
+    <p align=center><IMG SRC='http://%WIFI_ADDR%:%STREAM_PORT%/stream' style='width:300px;'></p><br/><br/>
+    <!-- <p align=center><IMG SRC='http://192.168.4.1:81/stream' style='width:300px;'></p><br/><br/> -->
+    
+<p id="battery">Hello World!</p>
+<p align=center>
+    <button style=width:90px;height:80px onmousedown=getsend('go') onmouseup=getsend('stop') ontouchstart=getsend('go')
+            ontouchend=getsend('stop')></button>
+</p>
+<p align=center>
+    <button style=width:90px;height:80px onmousedown=getsend('left') onmouseup=getsend('stop')
+            ontouchstart=getsend('left') ontouchend=getsend('stop')></button>&nbsp;
+    <button style=width:90px;height:80px onmousedown=getsend('stop') onmouseup=getsend('stop')></button>&nbsp;
+    <button style=width:90px;height:80px onmousedown=getsend('right') onmouseup=getsend('stop')
+            ontouchstart=getsend('right') ontouchend=getsend('stop')></button>
+
+</p>
+
+<p align=center>
+    <button style=width:90px;height:80px onmousedown=getsend('back') onmouseup=getsend('stop')
+            ontouchstart=getsend('back') ontouchend=getsend('stop')></button>
+</p>
+
+<p align=center>
+    <button style=width:140px;height:40px onmousedown=getsend('led')>LED</button>
+</p>

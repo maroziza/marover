@@ -1,14 +1,23 @@
 void startWifi();
 void initCamera();
 
-void startWebControlServer();
-void startStreamServer();
+void startAsyncWebServer();
+
+
 
 
 void startPs3Input();
 bool startPs3InputWithTimeout(int seconds);
 
-void startAsyncStreamServer();
+// void startAsyncStreamServer();
 
 
-void startWebServicesAndWifi();
+
+void initFS();
+
+void stats(String msg);
+
+
+
+void startJS();
+void loopJS();
