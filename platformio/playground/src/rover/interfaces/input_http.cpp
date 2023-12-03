@@ -102,7 +102,7 @@ void initControlEndpoints(AsyncWebServer * server){
     });
 
     server -> on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){
-        request->send(LittleFS, "/script.js", String(), false, processor);
+        request->send(LittleFS, "/script.js", "text/javascript", false, processor);
     });
 }
 
