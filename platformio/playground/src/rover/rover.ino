@@ -89,6 +89,9 @@ void setup() {
       initControlEndpoints(server);
       stats("Init Control endpoints");
 
+      initFileAsyncEndpoints(server);
+      stats("Init Fileserver endpoints");
+
       web_server_start();
       stats("Web Server Started");
   }
@@ -101,6 +104,12 @@ void loop() {
   loopJS(); 
 #endif  
 
+	if (IsRebootRequired) {
+		Serial.println("Rebooting ESP32: "); 
+		delay(1000); // give time for reboot page to load
+		ESP.restart();
+	}
+  
 // For timer, async, etc.
   vTaskDelay(50/ portTICK_PERIOD_MS );
 }

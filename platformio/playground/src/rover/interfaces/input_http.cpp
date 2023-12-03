@@ -90,11 +90,19 @@ void initControlEndpoints(AsyncWebServer * server){
     server -> on("/left", HTTP_GET, left_handler);
     server -> on("/right", HTTP_GET, right_handler);
     server -> on("/led", HTTP_GET, led_handler);
-    
+
+    server -> on("/battery", HTTP_GET, battery_handler); 
 
     server -> on("/", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send(LittleFS, "/index.html", String(), false, processor);
     });
 
+    server -> on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
+        request->send(LittleFS, "/style.css", String(), false, processor);
+    });
+
+    server -> on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){
+        request->send(LittleFS, "/script.js", String(), false, processor);
+    });
 }
 
