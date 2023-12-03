@@ -2,6 +2,7 @@
 #include "modules.h"
 #include <Arduino.h>
 #include "config.h"
+#include "web_server.h"
 
 #define WHEELS_LAYOUT 0
 
@@ -78,8 +79,18 @@ void setup() {
   if(!bt_connected) {
       startWifi();
       stats("WiFi");
-      startAsyncWebServer();
-      stats("Async Web Server");
+
+      AsyncWebServer * server = web_server_init();
+      stats("Init Webserver");
+
+      initCameraStream(server);
+      stats("Init Camera stream");
+
+      initControlEndpoints(server);
+      stats("Init Control endpoints");
+
+      web_server_start();
+      stats("Web Server Started");
   }
 
 }
@@ -91,7 +102,7 @@ void loop() {
 #endif  
 
 // For timer, async, etc.
-  // vTaskDelay(50/ portTICK_PERIOD_MS );
+  vTaskDelay(50/ portTICK_PERIOD_MS );
 }
 
 
