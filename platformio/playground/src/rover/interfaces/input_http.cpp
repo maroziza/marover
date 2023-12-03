@@ -94,11 +94,11 @@ void initControlEndpoints(AsyncWebServer * server){
     server -> on("/battery", HTTP_GET, battery_handler); 
 
     server -> on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-        request->send(LittleFS, "/index.html", String(), false, processor);
+        request->send(LittleFS, "/index.html", "text/html", false, processor);
     });
 
     server -> on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
-        request->send(LittleFS, "/style.css", String(), false, processor);
+        request->send(LittleFS, "/style.css", "text/css", false, processor);
     });
 
     server -> on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){
