@@ -30,6 +30,7 @@ void chasis_light() {
 }
 
 
+
 void chasis_right(){
     WheelAct(HIGH, LOW, LOW, HIGH);
     Serial.println("Right");
@@ -56,3 +57,27 @@ void chasis_forward(){
     Serial.println("Forward");
 }
 
+//todo analog
+void chasis_axis(int *asix, int min,  int max){
+    if (sizeof(asix) >=2){
+        int x = map(asix[0], min, max, -100, 100);
+        int y = map(asix[1],  min, max, -100, 100);
+        int xMod = abs(x);
+        int yMod = abs(y);
+        if (xMod > 10 || yMod > 10){
+            if (xMod > yMod) {
+                if(x > 0) {
+                    chasis_right();
+                } else {
+                    chasis_left();
+                }
+            } else {
+                if (y < 0){
+                    chasis_forward();
+                } else {
+                    chasis_back();
+                }
+            }
+        }
+    }
+}

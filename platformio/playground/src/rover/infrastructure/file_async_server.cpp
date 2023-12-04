@@ -210,24 +210,27 @@ void initFileAsyncEndpoints(AsyncWebServer * server){
     request->send(SPIFFS, "/admin/logout.html", String(), false, server_string_processor);
   });
 
-  server->on("/admin.html", HTTP_GET, [](AsyncWebServerRequest * request) {
-    String logmessage = "Client:" + request->client()->remoteIP().toString() + + " " + request->url();
-    if (server_authenticate(request)) {
-      logmessage += " Auth: Success";
-      Serial.println(logmessage);
-      request->send(SPIFFS, "/admin/index.html", String(), false, server_string_processor);
-    } else {
-      logmessage += " Auth: Failed";
-      Serial.println(logmessage);
-      return request->requestAuthentication();
-    }
-  });
+
+  server -> serveStatic("/admin/", LittleFS, "/admin/").setDefaultFile("index.html");
+
+  // server->on("/admin.html", HTTP_GET, [](AsyncWebServerRequest * request) {
+  //   String logmessage = "Client:" + request->client()->remoteIP().toString() + + " " + request->url();
+  //   if (server_authenticate(request)) {
+  //     logmessage += " Auth: Success";
+  //     Serial.println(logmessage);
+  //     request->send(SPIFFS, "/admin/index.html", String(), false, server_string_processor);
+  //   } else {
+  //     logmessage += " Auth: Failed";
+  //     Serial.println(logmessage);
+  //     return request->requestAuthentication();
+  //   }
+  // });
 
 
-    // Route to load style.css file
-  server->on("/admin/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(SPIFFS, "/admin/style.css", "text/css");
-  });
+  //   // Route to load style.css file
+  // server->on("/admin/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
+  //   request->send(SPIFFS, "/admin/style.css", "text/css");
+  // });
 
   server->on("/reboot", HTTP_GET, [](AsyncWebServerRequest * request) {
     String logmessage = "Client:" + request->client()->remoteIP().toString() + " " + request->url();

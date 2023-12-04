@@ -22,3 +22,7 @@
 #define CONFIG_MAROVER_WEB_USER "admin"
 #define CONFIG_MAROVER_WEB_PASSWORD "admin"
 
+
+#define CONFIG_MAROVER_AXIS_NUMBER 2
+
+

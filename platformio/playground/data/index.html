@@ -1,4 +1,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<script src="joy.js"></script>
+
 <script>var xhttp = new XMLHttpRequest();</script>
 <script>function getsend(arg) {
     xhttp.open('GET', arg + '?' + new Date().getTime(), true);
@@ -10,14 +12,32 @@
     console.log(xhttp.responseText);
     document.getElementById("battery").innerHTML = xhttp.responseText
 } </script>
+
+<script>function sendAxisData(axisData) {
+    xhttp.open('POST', 'axis', false);
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.send(JSON.stringify({
+            axis: axisData,
+            min: -100,
+            max: 100 
+        }));
+} </script>
+
+
+
 <script type="text/javascript">var timer = setInterval(function () {
     getbattery();
 }, 5 * 1000); </script>
+
     <p align=center><IMG SRC='http://%WIFI_ADDR%:%STREAM_PORT%/stream' style='width:300px;'></p><br/><br/>
     <!-- <p align=center><IMG SRC='http://192.168.4.1:81/stream' style='width:300px;'></p><br/><br/> -->
     
+
+
 <p align=left id="battery">Battery:</p>
-<p align=center>
+
+
+<!-- <p align=center>
     <button style=width:90px;height:80px onmousedown=getsend('go') onmouseup=getsend('stop') ontouchstart=getsend('go')
             ontouchend=getsend('stop')></button>
 </p>
@@ -35,8 +55,31 @@
             ontouchstart=getsend('back') ontouchend=getsend('stop')></button>
 </p>
 
+ -->
+
 <p align=center>
     <button style=width:140px;height:40px onmousedown=getsend('led')>LED</button>
 </p>
+<p align=center>
+    <div id="joyDiv" style="width: 200px; height: 200px; margin: auto; touch-action: none;"></div>
+</p>
 
-<p align=left><a href="/admin.html">File Server Admin</a></p>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
+<p align=center><a href="/admin/">File Server Admin</a></p>
+
+
+
+<script type="text/javascript">
+
+var Joy = new JoyStick('joyDiv', {}, function(stickData) {
+    //inverted y
+    sendAxisData([stickData.x, -stickData.y]);
+});
+
+</script>

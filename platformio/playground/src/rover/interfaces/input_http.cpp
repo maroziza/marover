@@ -23,6 +23,8 @@
 #include <LittleFS.h>
 #include "modules.h"
 #include "config.h"
+#include <ArduinoJson.h>
+#include <AsyncJson.h>
 
 
 extern String WiFiAddr;
@@ -50,6 +52,8 @@ static void right_handler(AsyncWebServerRequest *request){
     stats("right");
     request->send(200, "text/html", "OK");
 }
+
+
 
 static void stop_handler(AsyncWebServerRequest *request){
     chasis_stop();
@@ -93,16 +97,34 @@ void initControlEndpoints(AsyncWebServer * server){
 
     server -> on("/battery", HTTP_GET, battery_handler); 
 
-    server -> on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-        request->send(LittleFS, "/index.html", "text/html", false, processor);
-    });
 
-    server -> on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
-        request->send(LittleFS, "/style.css", "text/css", false, processor);
-    });
+    server -> addHandler(new AsyncCallbackJsonWebHandler("/axis", [](AsyncWebServerRequest *request, JsonVariant &json) {
+            if (json.is<JsonObject>()){
+                JsonObject root = json.as<JsonObject>();
+                JsonArray ax =  root["axis"].as<JsonArray>();
+                // size_t axsize = ax.size();
 
-    server -> on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){
-        request->send(LittleFS, "/script.js", "text/javascript", false, processor);
-    });
+
+                int i_axs[CONFIG_MAROVER_AXIS_NUMBER];
+                copyArray(ax, i_axs);
+                int min = root["min"];
+                int max = root["max"];
+                chasis_axis(i_axs, min, max);
+
+                String out;
+                serializeJson(root, out);
+                request->send(200, "application/json", out);
+            } else {
+                request->send(400, "application/json", "{\"error\": \"Bad Request\"}");
+            }
+    }));
+
+
+    // server -> on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    //     request->send(LittleFS, "/index.html", "text/html", false, processor);
+    // });
+
+    
+    server -> serveStatic("/", LittleFS, "/").setDefaultFile("index.html").setTemplateProcessor(processor);
 }
 
