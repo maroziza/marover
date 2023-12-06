@@ -49,7 +49,7 @@ void chasis_back() {
 
 void chasis_stop() {
     WheelAct(LOW, LOW, LOW, LOW);
-    // Serial.print(".");
+    Serial.print(".");
 }
 
 void chasis_forward(){
@@ -78,6 +78,8 @@ void chasis_axis(int *asix, int min,  int max){
                     chasis_back();
                 }
             }
+        } else {
+            chasis_stop();
         }
     }
 }
