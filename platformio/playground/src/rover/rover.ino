@@ -28,6 +28,7 @@ void setup() {
   Serial.println(xPortGetCoreID());
   Serial.println();
 
+  initLight();
 #if CONFIG_MAROVER_CHASIS_MODE == CHASIS_MODE_DUMMY  
   initChasis();
   stats("Chasis DUMMY");
@@ -35,6 +36,7 @@ void setup() {
   initChasisPWMChannels();
   stats("Chasis PWM");
 #endif
+
 
   initFS();
   stats("FS");

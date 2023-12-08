@@ -30,39 +30,8 @@
 extern String WiFiAddr;
 
 
-static void go_handler(AsyncWebServerRequest *request){
-    chasis_forward();
-    stats("go");
-    request->send(200, "text/html", "OK");
-}
-
-static void back_handler(AsyncWebServerRequest *request){
-    chasis_back();
-    stats("back");
-    request->send(200, "text/html", "OK");
-}
-
-static void left_handler(AsyncWebServerRequest *request){
-    chasis_left();
-    stats("left");
-    request->send(200, "text/html", "OK");
-}
-static void right_handler(AsyncWebServerRequest *request){
-    chasis_right();
-    stats("right");
-    request->send(200, "text/html", "OK");
-}
-
-
-
-static void stop_handler(AsyncWebServerRequest *request){
-    chasis_stop();
-    stats("stop");
-    request->send(200, "text/html", "OK");
-}
-
 static void led_handler(AsyncWebServerRequest *request){
-    chasis_light();
+    toggle_light();
     stats("led");
     request->send(200, "text/html", "OK");
 }
@@ -70,7 +39,7 @@ static void led_handler(AsyncWebServerRequest *request){
 static void battery_handler(AsyncWebServerRequest *request){
     // static int t=0;
     // Serial.println("battery:");
-    request->send(200, "text/html", "Battery: TBD");    
+    request->send(200, "text/html", "Battery: ~%");    
 }
 
 
@@ -88,11 +57,6 @@ static String processor(const String& var) {
 
 void initControlEndpoints(AsyncWebServer * server){
 
-    server -> on("/go", HTTP_GET, go_handler);
-    server -> on("/stop", HTTP_GET, stop_handler);
-    server -> on("/back", HTTP_GET, back_handler);
-    server -> on("/left", HTTP_GET, left_handler);
-    server -> on("/right", HTTP_GET, right_handler);
     server -> on("/led", HTTP_GET, led_handler);
 
     server -> on("/battery", HTTP_GET, battery_handler); 

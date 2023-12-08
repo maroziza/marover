@@ -1,7 +1,7 @@
 void startWifi();
 void initCamera();
 
-
+void initLight();
 void initChasis();
 void initChasisPWMChannels();
 

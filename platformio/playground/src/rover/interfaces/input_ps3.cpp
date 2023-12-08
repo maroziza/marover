@@ -2,6 +2,8 @@
 #include "chasis.h"
 #include "modules.h"
 
+static const int PS3_MIN_ANALOG = -255;
+static const int PS3_MAX_ANALOG = 255;
 
 
 static void  notify(){
@@ -9,57 +11,31 @@ static void  notify(){
     int x = abs(Ps3.data.analog.stick.lx) > abs(Ps3.data.analog.stick.rx) ? Ps3.data.analog.stick.lx : Ps3.data.analog.stick.rx ;
     int y = abs(Ps3.data.analog.stick.ly) > abs(Ps3.data.analog.stick.ry) ? Ps3.data.analog.stick.ly : Ps3.data.analog.stick.ry ; 
 
+
     int xMod = abs(x);
     int yMod = abs(y);
-    if (xMod > 30 || yMod > 30){
-        if (xMod > yMod) {
-            if(x > 0) {
-                chasis_right();
-            } else {
-                chasis_left();
-            }
-        } else {
-            if (y < 0){
-                chasis_forward();
-            } else {
-                chasis_back();
-            }
-        }
-    } else if(Ps3.event.button_down.triangle){
-        chasis_light();
-    }
-    //--------------- Digital D-pad button events --------------
-    else if(Ps3.data.button.up) {
-        chasis_forward();
-    } else  if(Ps3.data.button.down) {
-        chasis_back();
+    int axis[2] = {0, 0};
+
+    if(Ps3.event.button_down.triangle){
+        toggle_light();
+    }else if (xMod > 30 || yMod > 30){
+        axis[0] = x;
+        axis[1] = y;     
+    } else if(Ps3.data.button.up) {
+        axis[0] = 0;
+        axis[1] = -Ps3.data.analog.button.up;   
+    } else if(Ps3.data.button.down) {
+        axis[0] = 0;
+        axis[1] = Ps3.data.analog.button.down;   
     } else if (Ps3.data.button.left) {
-        chasis_left();
+        axis[0] = -Ps3.data.analog.button.left;
+        axis[1] = 0;  
     } else if (Ps3.data.button.right) {
-        chasis_right();
-    } else if (Ps3.data.button.l1 || Ps3.data.button.r1 || Ps3.data.button.l2  || Ps3.data.button.r2 ) {
-        int nLf = Ps3.data.button.l1 ? HIGH : LOW;
-        int nLb = Ps3.data.button.l2 && !Ps3.data.button.l1 ? HIGH : LOW;
-        int nRf = Ps3.data.button.r1 ? HIGH : LOW;
-        int nRb = Ps3.data.button.r2 && !Ps3.data.button.r1 ? HIGH : LOW;
-        WheelAct(nLf, nLb, nRf, nRb);
-        if( nLf > 0 ){
-            Serial.println("Left Track: Forward");
-        } 
-        if( nLb > 0 ){
-            Serial.println("Left Track: Back");
-        } 
-
-        if( nRf > 0 ){
-            Serial.println("Right Track: Forward");
-        } 
-
-        if( nRb > 0 ){
-            Serial.println("Right Track: Back");
-        } 
-    } else {
-        chasis_stop();
-    }
+        axis[0] = Ps3.data.analog.button.right;
+        axis[1] = 0;
+    } 
+        
+    chasis_pwm_axis(axis, PS3_MIN_ANALOG, PS3_MAX_ANALOG);
 
 }
 

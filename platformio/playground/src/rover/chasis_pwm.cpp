@@ -33,15 +33,12 @@ const int START_DUTY_CYCLE = (int)(MAX_DUTY_CYCLE / 5); // starting at 10% pwm
 // const int START_DUTY_CYCLE = 0;
 
 
-static int gpLed =  4; 
-
 
 static int lbPc = 1;
 static int lfPc = 2;
 static int rbPc = 3;
 static int rfPc = 4;
 
-static int ledPc = 5;
 
 static int time_ms(){
    return esp_timer_get_time() /1000; 
@@ -93,11 +90,6 @@ void wheelsActPwm(int nLf, int nLb, int nRf, int nRb)
     setPWMChannel(nRb, rbPc);
 
     Serial.println();
-}
-
-void lightPwm(int l) {
-    setPWMChannel(l, ledPc);
-    Serial.printf("Light: %d%\n", l);
 }
 
 static void stop(){

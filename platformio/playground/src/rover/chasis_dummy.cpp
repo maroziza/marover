@@ -22,10 +22,6 @@ static int gpRf = 14; // Right Wheel Forward
 
 #endif
 
-static int gpLed =  4; 
-
-
-static bool lightState = false;
 
 
 void initChasis(){
@@ -33,20 +29,18 @@ void initChasis(){
   pinMode(gpLf, OUTPUT); //Left Forward
   pinMode(gpRb, OUTPUT); //Right Forward
   pinMode(gpRf, OUTPUT); //Right Backward
-  pinMode(gpLed, OUTPUT); //Light
-  // pinMode(gpIR, INPUT); //Light
+
 
   //initialize
   digitalWrite(gpLb, LOW);
   digitalWrite(gpLf, LOW);
   digitalWrite(gpRb, LOW);
   digitalWrite(gpRf, LOW);
-  digitalWrite(gpLed, LOW);
 }
 
 
 
-void WheelAct(int nLf, int nLb, int nRf, int nRb)
+static void WheelAct(int nLf, int nLb, int nRf, int nRb)
 {
  digitalWrite(gpLf, nLf);
  digitalWrite(gpLb, nLb);
@@ -54,47 +48,35 @@ void WheelAct(int nLf, int nLb, int nRf, int nRb)
  digitalWrite(gpRb, nRb);
 }
 
-void chasis_light() {
-    if (lightState) {
-        digitalWrite(gpLed, LOW);
-        lightState = false;
-    } else {
-        digitalWrite(gpLed, HIGH);
-        lightState = true;
-    }
-    Serial.print("Light: ");
-    Serial.println(lightState);
-}
 
 
-
-void chasis_right(){
+static void chasis_right(){
     WheelAct(HIGH, LOW, LOW, HIGH);
     Serial.println("Right");
 }
 
-void chasis_left(){
+static void chasis_left(){
     WheelAct(LOW, HIGH, HIGH, LOW);
     Serial.println("Left");
 }
 
 
-void chasis_back() {
+static void chasis_back() {
     WheelAct(LOW, HIGH, LOW, HIGH);
     Serial.println("Back");
 }
 
-void chasis_stop() {
+static void chasis_stop() {
     WheelAct(LOW, LOW, LOW, LOW);
     Serial.print(".");
 }
 
-void chasis_forward(){
+static void chasis_forward(){
     WheelAct(HIGH, LOW, HIGH, LOW);
     Serial.println("Forward");
 }
 
-//todo analog
+
 void chasis_axis(int *asix, int min,  int max){
     if (sizeof(asix) >=2){
         int x = map(asix[0], min, max, -100, 100);
