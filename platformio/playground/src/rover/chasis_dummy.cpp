@@ -1,13 +1,50 @@
 
 #include "Arduino.h"
 
-extern int gpLb;
-extern int gpLf;
-extern int gpRb;
-extern int gpRf;
-extern int gpLed;
 
-bool lightState = false;
+#define WHEELS_LAYOUT 0
+
+
+#if WHEELS_LAYOUT
+
+// GPIO Setting
+static int gpLb = 12; // Left Wheel Back
+static int gpLf = 13; // Left Wheel Forward
+static int gpRb = 15; // Right Wheel Back
+static int gpRf = 14; // Right Wheel Forward
+
+#else
+
+static int gpLb = 13; // Left Wheel Back
+static int gpLf = 12; // Left Wheel Forward
+static int gpRb = 15; // Right Wheel Back
+static int gpRf = 14; // Right Wheel Forward
+
+#endif
+
+static int gpLed =  4; 
+
+
+static bool lightState = false;
+
+
+void initChasis(){
+  pinMode(gpLb, OUTPUT); //Left Backward
+  pinMode(gpLf, OUTPUT); //Left Forward
+  pinMode(gpRb, OUTPUT); //Right Forward
+  pinMode(gpRf, OUTPUT); //Right Backward
+  pinMode(gpLed, OUTPUT); //Light
+  // pinMode(gpIR, INPUT); //Light
+
+  //initialize
+  digitalWrite(gpLb, LOW);
+  digitalWrite(gpLf, LOW);
+  digitalWrite(gpRb, LOW);
+  digitalWrite(gpRf, LOW);
+  digitalWrite(gpLed, LOW);
+}
+
+
 
 void WheelAct(int nLf, int nLb, int nRf, int nRb)
 {

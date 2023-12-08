@@ -130,7 +130,7 @@ static void server_handle_SPIFFS_upload(AsyncWebServerRequest *request, String f
       // close the file handle as the upload is now done
       request->_tempFile.close();
       Serial.println(logmessage);
-      request->redirect("/admin.html");
+      request->redirect("/admin/");
     }
   } else {
     Serial.println("Auth: Failed");
@@ -211,7 +211,7 @@ void initFileAsyncEndpoints(AsyncWebServer * server){
   });
 
 
-  server -> serveStatic("/admin/", LittleFS, "/admin/").setDefaultFile("index.html");
+  server -> serveStatic("/admin/", LittleFS, "/admin/").setDefaultFile("index.html").setTemplateProcessor(server_string_processor);
 
   // server->on("/admin.html", HTTP_GET, [](AsyncWebServerRequest * request) {
   //   String logmessage = "Client:" + request->client()->remoteIP().toString() + + " " + request->url();

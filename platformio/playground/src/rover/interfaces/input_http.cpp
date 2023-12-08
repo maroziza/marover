@@ -98,19 +98,22 @@ void initControlEndpoints(AsyncWebServer * server){
     server -> on("/battery", HTTP_GET, battery_handler); 
 
 
+
     server -> addHandler(new AsyncCallbackJsonWebHandler("/axis", [](AsyncWebServerRequest *request, JsonVariant &json) {
             if (json.is<JsonObject>()){
                 JsonObject root = json.as<JsonObject>();
                 JsonArray ax =  root["axis"].as<JsonArray>();
-                // size_t axsize = ax.size();
-
 
                 int i_axs[CONFIG_MAROVER_AXIS_NUMBER];
                 copyArray(ax, i_axs);
                 int min = root["min"];
                 int max = root["max"];
-                chasis_axis(i_axs, min, max);
 
+#if CONFIG_MAROVER_CHASIS_MODE == CHASIS_MODE_DUMMY  
+                chasis_axis(i_axs, min, max);
+#elif CONFIG_MAROVER_CHASIS_MODE == CHASIS_MODE_PWM 
+                chasis_pwm_axis(i_axs, min, max);
+#endif
                 String out;
                 serializeJson(root, out);
                 request->send(200, "application/json", out);
@@ -120,11 +123,6 @@ void initControlEndpoints(AsyncWebServer * server){
     }));
 
 
-    // server -> on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    //     request->send(LittleFS, "/index.html", "text/html", false, processor);
-    // });
-
-    
     server -> serveStatic("/", LittleFS, "/").setDefaultFile("index.html").setTemplateProcessor(processor);
 }
 

@@ -3,27 +3,8 @@
 #include <Arduino.h>
 #include "config.h"
 #include "web_server.h"
-
-#define WHEELS_LAYOUT 0
-
-#if WHEELS_LAYOUT
-
-// GPIO Setting
-extern int gpLb = 12; // Left Wheel Back
-extern int gpLf = 13; // Left Wheel Forward
-extern int gpRb = 15; // Right Wheel Back
-extern int gpRf = 14; // Right Wheel Forward
-
-#else
-
-extern int gpLb = 13; // Left Wheel Back
-extern int gpLf = 12; // Left Wheel Forward
-extern int gpRb = 15; // Right Wheel Back
-extern int gpRf = 14; // Right Wheel Forward
-
-#endif
-
-extern int gpLed =  4; // Light
+#include "chasis.h"
+#include "soc/rtc_wdt.h"
 
 
 void stats(String msg)
@@ -37,26 +18,24 @@ void stats(String msg)
 }
 
 void setup() {
+  //https://stackoverflow.com/questions/66278271/task-watchdog-got-triggered-the-tasks-did-not-reset-the-watchdog-in-time
+  // rtc_wdt_protect_off();    // Turns off the automatic wdt service
+  // rtc_wdt_enable();         // Turn it on manually
+  // rtc_wdt_set_time(RTC_WDT_STAGE0, 20000); 
   Serial.begin(115200);
   Serial.setDebugOutput(true);
+  Serial.print("setup() running on core ");
+  Serial.println(xPortGetCoreID());
   Serial.println();
 
+#if CONFIG_MAROVER_CHASIS_MODE == CHASIS_MODE_DUMMY  
+  initChasis();
+  stats("Chasis DUMMY");
+#elif CONFIG_MAROVER_CHASIS_MODE == CHASIS_MODE_PWM 
+  initChasisPWMChannels();
+  stats("Chasis PWM");
+#endif
 
-  pinMode(gpLb, OUTPUT); //Left Backward
-  pinMode(gpLf, OUTPUT); //Left Forward
-  pinMode(gpRb, OUTPUT); //Right Forward
-  pinMode(gpRf, OUTPUT); //Right Backward
-  pinMode(gpLed, OUTPUT); //Light
-  // pinMode(gpIR, INPUT); //Light
-
-  //initialize
-  digitalWrite(gpLb, LOW);
-  digitalWrite(gpLf, LOW);
-  digitalWrite(gpRb, LOW);
-  digitalWrite(gpRf, LOW);
-  digitalWrite(gpLed, LOW);
-
-  stats("Initial");
   initFS();
   stats("FS");
 
@@ -109,7 +88,10 @@ void loop() {
 		delay(1000); // give time for reboot page to load
 		ESP.restart();
 	}
-  
+
+#if CONFIG_MAROVER_CHASIS_MODE == CHASIS_MODE_PWM
+  chasis_pwm_idle();
+#endif 
 // For timer, async, etc.
   vTaskDelay(50/ portTICK_PERIOD_MS );
 }
