@@ -91,9 +91,9 @@ void loop() {
 		ESP.restart();
 	}
 
-#if CONFIG_MAROVER_CHASIS_MODE == CHASIS_MODE_PWM
-  chasis_pwm_idle();
-#endif 
+// #if CONFIG_MAROVER_CHASIS_MODE == CHASIS_MODE_PWM
+//   chasis_pwm_idle();
+// #endif 
 // For timer, async, etc.
   vTaskDelay(50/ portTICK_PERIOD_MS );
 }
