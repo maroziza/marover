@@ -1,4 +1,4 @@
-void startWifi();
+void startWifi(int seconds);
 void initCamera();
 
 void initLight();

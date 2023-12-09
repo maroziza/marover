@@ -91,7 +91,7 @@ void setup()
     {
       Serial.println("Boot mode: STARTUP_CONTROL_MODE_WIFI_FORCED. Creating web services.");
     }
-    startWifi();
+    startWifi(5);
     stats("WiFi");
 
     AsyncWebServer *server = web_server_init();

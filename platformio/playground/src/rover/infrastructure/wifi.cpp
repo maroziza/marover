@@ -3,44 +3,35 @@
 
 #define STA_MODE CONFIG_MAROVER_WIFI_STA_MODE
 
-#if STA_MODE
-const char* ssid = CONFIG_MAROVER_WIFI_SSID;
-const char* password = CONFIG_MAROVER_WIFI_PWD;
-#else
-const char* ssid = CONFIG_MAROVER_AP_WIFI_SSID;
-const char* password = CONFIG_MAROVER_AP_WIFI_PWD;
-#endif
-
 extern String WiFiAddr = "";
 
-void startWifi(){
-Serial.print("Startting WiFI: ");    
-#if STA_MODE
-  WiFi.begin(ssid, password);
-  Serial.print("connecting to ");
-  Serial.print(ssid);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.print(".");
+void startWifi(int seconds)
+{
+  bool connected = false;
+  if (CONFIG_MAROVER_WIFI_STATION_ENABLED)
+  {
+    int cnt = 0;
+    WiFi.begin(CONFIG_MAROVER_WIFI_STATION_SSID, CONFIG_MAROVER_WIFI_STATION_SSID);
+    Serial.print("connecting to ");
+    Serial.print(CONFIG_MAROVER_WIFI_STATION_SSID);
+    while (!connected && cnt++ < seconds)
+    {
+      delay(1000);
+      connected = (WiFi.status() == WL_CONNECTED);
+      Serial.print(".");
+    }
   }
-  
-#else
-  Serial.print("start AP ");
-  Serial.print(ssid);
-  WiFi.softAP(ssid, password);
-#endif
 
-
-#if STA_MODE
-  WiFiAddr = WiFi.localIP().toString();
-#else
-  WiFiAddr = WiFi.softAPIP().toString();
-#endif
-Serial.println(". Done!");
+  if (connected)
+  {
+    WiFiAddr = WiFi.localIP().toString();
+    Serial.println("done!");
+  }
+  if (!connected)
+  {
+    Serial.printf(" No connection within %ds timeout! Enabling AP ", seconds);
+    Serial.print(CONFIG_MAROVER_WIFI_AP_SSID);
+    Serial.print(WiFi.disconnect(true, true) && WiFi.softAP(CONFIG_MAROVER_WIFI_AP_SSID, CONFIG_MAROVER_WIFI_AP_PWD) ? ": done.\n" : ": failed.\n");
+    WiFiAddr = WiFi.softAPIP().toString();
+  }
 }
-
-
-// void stopWifi(){
-//     WiFi.disconnect(true, true);
-//     Serial.println("WiFi stopped.");
-// }

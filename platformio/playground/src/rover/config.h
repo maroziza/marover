@@ -1,12 +1,12 @@
 // WIFI 
-#define CONFIG_MAROVER_WIFI_STA_MODE 0  //Connesct to your AP if 1, otherwise creates one
+#define CONFIG_MAROVER_WIFI_STATION_ENABLED 1  //Connesct to your AP if 1, otherwise creates one
 
-#define CONFIG_MAROVER_WIFI_SSID "YOUR_WIFI_SSID"
+#define CONFIG_MAROVER_WIFI_STATION_SSID "YOUR_WIFI_SSID"
 #define CONFIG_MAROVER_WIFI_PWD "YOUR_WIFI_PASSWORD"
 
 
-#define CONFIG_MAROVER_AP_WIFI_SSID "esp32-sv"
-#define CONFIG_MAROVER_AP_WIFI_PWD "qwer1234"
+#define CONFIG_MAROVER_WIFI_AP_SSID "esp32-sv"
+#define CONFIG_MAROVER_WIFI_AP_PWD "qwer1234"
 
 
 //QuickJS engine enabled

@@ -34,6 +34,7 @@
 <p align=center><IMG SRC='http://%WIFI_ADDR%:%STREAM_PORT%/stream' style='width:300px;'></p><br /><br />
 
 <p align=left id="battery"></p>
+<p align=center><a href="/admin/">File Server Admin</a></p>
 
 <p align=center>
     <button style=width:140px;height:40px onmousedown=getsend('led')>LED</button>
@@ -41,16 +42,6 @@
 <p align=center>
 <div id="joyDiv" style="width: 300px; height: 300px; margin: auto; touch-action: none; "></div>
 </p>
-
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-
-<p align=center ><a href="/admin/">File Server Admin</a></p>
-
 
 
 
@@ -60,5 +51,6 @@
         //inverted y
         sendAxisData([stickData.x, -stickData.y]);
     });
+
 
 </script>
