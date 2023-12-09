@@ -9,10 +9,6 @@
 #define CONFIG_MAROVER_AP_WIFI_PWD "qwer1234"
 
 
-//PS3 BT: creates ps3 control, web otherwise
-#define CONFIG_MAROVER_PS3_BT 0
-
-
 //QuickJS engine enabled
 #define CONFIG_MAROVER_QUICK_JS 1
 
@@ -29,8 +25,6 @@
 
 #define CHASIS_MODE_DUMMY 1
 #define CHASIS_MODE_PWM 2
-
-
 #define CONFIG_MAROVER_CHASIS_MODE CHASIS_MODE_PWM
 
 #define CONFIG_MAROVER_CHASIS_IDLE_MS 1000
