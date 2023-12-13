@@ -1,6 +1,9 @@
 #include <WiFi.h>
 #include "config.h"
 
+//https://github.com/espressif/esp-idf/issues/7186
+#define CONFIG_ESP32_WIFI_CACHE_TX_BUFFER_NUM 16
+
 #define STA_MODE CONFIG_MAROVER_WIFI_STA_MODE
 
 extern String WiFiAddr = "";
@@ -11,13 +14,13 @@ void startWifi(int seconds)
   if (CONFIG_MAROVER_WIFI_STATION_ENABLED)
   {
     int cnt = 0;
-    WiFi.begin(CONFIG_MAROVER_WIFI_STATION_SSID, CONFIG_MAROVER_WIFI_STATION_SSID);
+    WiFi.begin(CONFIG_MAROVER_WIFI_STATION_SSID, CONFIG_MAROVER_WIFI_STATION_PWD);
     Serial.print("connecting to ");
     Serial.print(CONFIG_MAROVER_WIFI_STATION_SSID);
     while (!connected && cnt++ < seconds)
     {
       delay(1000);
-      connected = (WiFi.status() == WL_CONNECTED);
+      connected = WiFi.isConnected();
       Serial.print(".");
     }
   }

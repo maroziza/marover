@@ -142,12 +142,5 @@ void chasis_pwm_axis(int *asix, int min,  int max){
 
 
 
-void chasis_pwm_idle(){
-    int64_t cur = time_ms();
-    if(cur - last_update > CONFIG_MAROVER_CHASIS_IDLE_MS && moving){
-        last_update = cur;
-        Serial.printf("Idle %dms: ", CONFIG_MAROVER_CHASIS_IDLE_MS);
-        stop();
-    }   
-}
+
 

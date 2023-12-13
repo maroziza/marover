@@ -1,5 +1,6 @@
 void startWifi(int seconds);
 void initCamera();
+void startLegacyStreamServer();
 
 void initLight();
 void initChasis();

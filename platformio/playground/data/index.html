@@ -1,43 +1,43 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <link rel="stylesheet" type="text/css" href="style.css">
 
+<script src="ws.js"></script>
 <script src="joy.js"></script>
+<!-- <script>var xhttp = new XMLHttpRequest();</script>
 
-<script>var xhttp = new XMLHttpRequest();</script>
-<script>function getsend(arg) {
-        xhttp.open('GET', arg + '?' + new Date().getTime(), true);
-        xhttp.send()
-    } </script>
 <script>function getbattery() {
-        xhttp.open('GET', 'battery', false);
-        xhttp.send();
-        console.log(xhttp.responseText);
-        document.getElementById("battery").innerHTML = xhttp.responseText
-    } </script>
-
-<script>function sendAxisData(axisData) {
-        xhttp.open('POST', 'axis', false);
-        xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        xhttp.send(JSON.stringify({
-            axis: axisData,
-            min: -100,
-            max: 100
-        }));
-    } </script>
-
+    xhttp.open('GET', 'battery', false);
+    xhttp.send();
+    console.log(xhttp.responseText);
+    document.getElementById("battery").innerHTML = xhttp.responseText
+} </script>
 
 
 <script type="text/javascript">var timer = setInterval(function () {
         getbattery();
-    }, 5 * 1000); </script>
+    }, 5 * 1000); </script> -->
 
-<p align=center><IMG SRC='http://%WIFI_ADDR%:%STREAM_PORT%/stream' style='width:300px;'></p><br /><br />
+
+<script>function start_stream() {
+        var streamLink = "<IMG SRC='http://%WIFI_ADDR%:%STREAM_PORT%/stream' style='width:300px;'>";
+        document.getElementById("stream").innerHTML = streamLink
+    }
+</script>
+
+<p align=center id="stream"> </p><br /><br />
+<!-- <p align=center id="stream"></p> -->
+
+<p align=center>
+    <button onclick="start_stream()">(Re)Stream</button>
+</p>
+
 
 <p align=left id="battery"></p>
+
 <p align=center><a href="/admin/">File Server Admin</a></p>
 
 <p align=center>
-    <button style=width:140px;height:40px onmousedown=getsend('led')>LED</button>
+    <button style=width:140px;height:40px onmousedown=sendLedWs()>LED</button>
 </p>
 <p align=center>
 <div id="joyDiv" style="width: 300px; height: 300px; margin: auto; touch-action: none; "></div>
@@ -49,7 +49,7 @@
 
     var Joy = new JoyStick('joyDiv', {}, function (stickData) {
         //inverted y
-        sendAxisData([stickData.x, -stickData.y]);
+        sendAxisWs([stickData.x, -stickData.y]);
     });
 
 

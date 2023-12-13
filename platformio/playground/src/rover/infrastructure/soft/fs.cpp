@@ -49,6 +49,38 @@ void listDir(fs::FS &fs, const char * dirname, uint8_t levels){
 }
 
 
+
+String listDirS(fs::FS &fs, const char * dirname, uint8_t levels){
+    String returnText = "Listing directory:" + String(dirname) + "\r\n";
+    File root = fs.open(dirname);
+    if(!root){
+        returnText += "- failed to open directory\r\n";
+        return returnText;
+    }
+    if(!root.isDirectory()){
+        returnText += " - not a directory\r\n";
+        return returnText;
+    }
+
+    File file = root.openNextFile();
+    while(file){
+        if(file.isDirectory()){
+            time_t t= file.getLastWrite();
+            struct tm * tmstruct = localtime(&t);
+
+            returnText += "  DIR : " + String(file.name())+"\r\n";
+            if(levels){
+                returnText += listDirS(fs, file.path(), levels -1);
+            }
+        } else {
+            returnText += "  FILE: " + String(file.path()) + "  SIZE: " +  String(file.size())+ "\r\n";
+        }
+        file = root.openNextFile();
+    }
+    return returnText; 
+}
+
+
 void createDir(fs::FS &fs, const char * path){
     Serial.printf("Creating Dir: %s\n", path);
     if(fs.mkdir(path)){

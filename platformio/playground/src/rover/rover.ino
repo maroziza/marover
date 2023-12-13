@@ -35,6 +35,7 @@ void setup()
   Serial.setDebugOutput(true);
   Serial.print("setup() running on core ");
   Serial.println(xPortGetCoreID());
+  preferences.begin("startup_prefs", false);
 
   initLight();
 #if CONFIG_MAROVER_CHASIS_MODE == CHASIS_MODE_DUMMY
@@ -57,7 +58,6 @@ void setup()
   stats("Camera");
   // try connect BT controller
 
-  preferences.begin("startup_prefs", false);
   uint startup_control_mode = preferences.getUInt("boot_mode", STARTUP_CONTROL_MODE_BT_AUTO);
   Serial.printf("Read startup mode preference: %d\n", startup_control_mode);
   if (startup_control_mode == STARTUP_CONTROL_MODE_BT_FORCED)
@@ -69,7 +69,7 @@ void setup()
   else if (startup_control_mode == STARTUP_CONTROL_MODE_BT_AUTO)
   {
     Serial.println("Boot mode: STARTUP_CONTROL_MODE_BT_AUTO. Will try BT connection. If failed fallback to WIFI on reboot.");
-    bool bt_connected = startPs3InputWithTimeout(5);
+    bool bt_connected = startPs3InputWithTimeout(CONFIG_MAROVER_BT_CONNECTION_TIMEOUT);
     stats("PS3 BT");
     if (!bt_connected)
     {
@@ -91,20 +91,28 @@ void setup()
     {
       Serial.println("Boot mode: STARTUP_CONTROL_MODE_WIFI_FORCED. Creating web services.");
     }
-    startWifi(5);
+    startWifi(CONFIG_MAROVER_WIFI_STATION_TIMEOUT);
     stats("WiFi");
 
     AsyncWebServer *server = web_server_init();
     stats("Init Webserver");
 
+#if CONFIG_MAROVER_WEB_STREAMING_ASYNC
     initCameraStream(server);
-    stats("Init Camera stream");
-
-    initControlEndpoints(server);
-    stats("Init Control endpoints");
+    stats("Init Async Camera stream");
+#else
+    startLegacyStreamServer();
+    stats("Init Legacy stream server");
+#endif
 
     initFileAsyncEndpoints(server);
     stats("Init Fileserver endpoints");
+
+    initWebHTML(server);
+    stats("Init static web resources");
+
+    initWebSocketControlsV1(server);
+    stats("Init Web Sockets V1 (async)");
 
     web_server_start();
     stats("Web Server Started");
@@ -130,9 +138,8 @@ void loop()
     ESP.restart();
   }
 
-  // #if CONFIG_MAROVER_CHASIS_MODE == CHASIS_MODE_PWM
-  //   chasis_pwm_idle();
-  // #endif
   // For timer, async, etc.
   vTaskDelay(50 / portTICK_PERIOD_MS);
+  // todo control
+  webSocketControlsV1Loop();
 }

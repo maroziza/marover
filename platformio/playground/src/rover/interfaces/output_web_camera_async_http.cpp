@@ -16,6 +16,7 @@
 #include "img_converters.h"
 #include "Arduino.h"
 #include "ESPAsyncWebServer.h"
+#include "modules.h"
 
 
 extern String WiFiAddr;
@@ -150,17 +151,19 @@ class AsyncJpegStreamResponse: public AsyncAbstractResponse {
 
 
 static void streamJpg(AsyncWebServerRequest *request){
+    stats("Stream requested");
     AsyncJpegStreamResponse *response = new AsyncJpegStreamResponse();
+    stats("Stream inited");
     if(!response){
         request->send(501);
         return;
     }
     response->addHeader("Access-Control-Allow-Origin", "*");
     request->send(response);
+    
 }
 
 
 void initCameraStream(AsyncWebServer * server){
     server -> on("/stream", HTTP_GET, streamJpg);
-    Serial.println("Camera stream endpoint registered.");
 }
