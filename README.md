@@ -25,14 +25,14 @@ Small educational robot platform for $25 base price. Build around 3d print body
 * 2x N20 motor
 *  double H-bridge pwm controller
 * 1S of 2S battery
-* 
+*
 
 ## control
 Control hardware can be implemented in two flavours, more cheap and common esp32-cam, or more powerfull sipeed m1s dock
 ### ESP32-Camera
 ![esp32 cam pinout](docs/pinout/ESP32-CAM.png)
 
-2 xtensa cores, 4mb of ram. i2c, i2s ports, wifi, bt, espnow connectivity 
+2 xtensa cores, 4mb of ram. i2c, i2s ports, wifi, bt, espnow connectivity
 as this board doesn't have direct USB support CP210x converter should be used.
 
 Guide: [docs/ESP32-Flashing.md](docs/ESP32-Flashing.md)
@@ -48,8 +48,6 @@ Docs: https://wiki.sipeed.com/hardware/en/maix/m1s/m1s_dock.html
 * https://arduino.ua/prod2551-servoprivid-tower-pro-mg995-180
 * https://arduino.ua/prod1525-lazer-krasnii-krest-3v-650nm-5mvt-9mm
 
-
-
 # links
 * [https://github.com/devinzhang91/esp32_sv_tank](https://github.com/devinzhang91/esp32_sv_tank)
 * [https://github.com/s60sc/ESP32-CAM_MJPEG2SD](https://github.com/s60sc/ESP32-CAM_MJPEG2SD)
@@ -57,5 +55,5 @@ Docs: https://wiki.sipeed.com/hardware/en/maix/m1s/m1s_dock.html
 * [https://github.com/rtlopez/esp-fc/tree/master](https://github.com/rtlopez/esp-fc/tree/master)
 * [docs/resources.md](docs/resources.md)
 
-
-
+# TODO
+* Clean up `active_wheel.scad`, make script that will generate active/passive wheel stl and corrseponding tire stl
