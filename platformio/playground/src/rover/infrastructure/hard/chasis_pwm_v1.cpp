@@ -25,8 +25,8 @@ static int gpRf = 14; // Right Wheel Forward
 #endif
 
 
-static int pwm_freq = 500;
-static int pwm_res = 8;
+static int pwm_freq = CONfIG_MAROVER_CHASIS_PWM_FREQ;
+static int pwm_res = CONfIG_MAROVER_CHASIS_PWM_RES;
 
 const int MAX_DUTY_CYCLE = (int)(pow(2, pwm_res) - 1); 
 
