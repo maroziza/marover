@@ -1,4 +1,6 @@
+#include "config.h"
 
+#if CONfIG_MAROVER_CHASIS_PWM_VERSION == 1
 #include "Arduino.h"
 #include "config.h"
 
@@ -134,13 +136,15 @@ void chasis_pwm_axis(int *asix, int min,  int max){
                 }
             }
         } else {
-            Serial.printf("Inputs [%d, %d] ", x, y);
-            stop();
+            if(moving) {
+                Serial.printf("Inputs [%d, %d] ", x, y);
+                stop();
+            }
         }
     }
 }
 
 
 
-
+#endif
 

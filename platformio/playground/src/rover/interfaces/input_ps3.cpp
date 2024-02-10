@@ -2,14 +2,17 @@
 #include "chasis.h"
 #include "modules.h"
 
-static const int PS3_MIN_ANALOG = -255;
-static const int PS3_MAX_ANALOG = 255;
+// static const int PS3_MIN_ANALOG = -255;
+// static const int PS3_MAX_ANALOG = 255;
 
 
 static void  notify(){
 
     int x = abs(Ps3.data.analog.stick.lx) > abs(Ps3.data.analog.stick.rx) ? Ps3.data.analog.stick.lx : Ps3.data.analog.stick.rx ;
     int y = abs(Ps3.data.analog.stick.ly) > abs(Ps3.data.analog.stick.ry) ? Ps3.data.analog.stick.ly : Ps3.data.analog.stick.ry ; 
+
+    x = max(x, -127);
+    y = max(y, -127);
 
 
     int xMod = abs(x);
@@ -18,24 +21,26 @@ static void  notify(){
 
     if(Ps3.event.button_down.triangle){
         toggle_light();
-    }else if (xMod > 30 || yMod > 30){
+    } else if (yMod > 10){
         axis[0] = x;
         axis[1] = y;     
-    } else if(Ps3.data.button.up) {
-        axis[0] = 0;
-        axis[1] = -Ps3.data.analog.button.up;   
-    } else if(Ps3.data.button.down) {
-        axis[0] = 0;
-        axis[1] = Ps3.data.analog.button.down;   
-    } else if (Ps3.data.button.left) {
-        axis[0] = -Ps3.data.analog.button.left;
-        axis[1] = 0;  
-    } else if (Ps3.data.button.right) {
-        axis[0] = Ps3.data.analog.button.right;
-        axis[1] = 0;
     } 
-        
-    chasis_pwm_axis(axis, PS3_MIN_ANALOG, PS3_MAX_ANALOG);
+
+
+    // if(Ps3.data.button.up) {
+    //     axis[1] = -Ps3.data.analog.button.up;   
+    // } 
+    // if(Ps3.data.button.down) {
+    //     axis[1] = Ps3.data.analog.button.down;   
+    // } 
+    // if (Ps3.data.button.left) {
+    //     axis[0] = -Ps3.data.analog.button.left;
+    // } 
+    // if (Ps3.data.button.right) {
+    //     axis[0] = Ps3.data.analog.button.right;
+    // } 
+
+    chasis_pwm_axis(axis, -127, 127);
 
 }
 
