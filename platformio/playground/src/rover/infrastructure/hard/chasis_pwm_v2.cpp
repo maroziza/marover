@@ -33,7 +33,7 @@ static int pwm_res = CONfIG_MAROVER_CHASIS_PWM_RES;
 
 const int MAX_DUTY_CYCLE = (int)(pow(2, pwm_res) - 1); 
 
-const int START_DUTY_CYCLE = (int)(MAX_DUTY_CYCLE / 5); // starting at 20% pwm
+const int START_DUTY_CYCLE = (int)(MAX_DUTY_CYCLE * CONfIG_MAROVER_CHASIS_PWM_START_DUTY_CYCLE_PERCENT / 100); 
 
 // const int START_DUTY_CYCLE = 0;
 
@@ -114,26 +114,30 @@ void chasis_pwm_axis(int *asix, int min,  int max){
         int y = map(asix[1],  min, max, -100, 100);
         int xMod = abs(x);
         int yMod = abs(y);
-        if (xMod > 10 || yMod > 10){
+        int x_idle_range = 10;
+        int y_idle_range = 10;
+
+        if ( yMod > y_idle_range){
             
             if (!moving) {
                 move_start_time = time_ms();
                 moving = true;    
-
             }
-
-            //lets do some dummy vectors math
             
+            yMod = map(yMod, y_idle_range, 100, 0, 100); //map active y range to [0,100]%
+
             int rightCorrection = 0;
             int leftCorrection = 0 ;
 
-            int turn = xMod; //take part of movement speed for turns
-            if(x > 0) {
-                rightCorrection = turn;
-            } else {
-                leftCorrection = turn;
+            if(xMod > x_idle_range) {
+                int turn = map(xMod, x_idle_range, 100, 0, 100); //map active x range to [0,100]%
+                if(x > 0) {
+                    rightCorrection = turn;
+                } else {
+                    leftCorrection = turn;
+                }
             }
-            
+
 
             int leftTrottle = max(0, yMod - leftCorrection);
             int rightTrottle = max(0, yMod - rightCorrection);
@@ -141,6 +145,8 @@ void chasis_pwm_axis(int *asix, int min,  int max){
 
             
             Serial.printf("Inputs [%d, %d]->[%d, %d] ", asix[0], asix[1], x, y);
+
+            Serial.printf(" LR:[%d, %d] ", leftCorrection, rightCorrection, x, y);
             if (y < 0){
                 Serial.printf("Forward L:%d%c R: %d%c => ", leftTrottle, 37, rightTrottle, 37);
                 wheelsActPwm(leftTrottle, 0, rightTrottle, 0);
