@@ -1,0 +1,9 @@
+build
+log
+install
+
+__pycache__
+
+.vscode
+.zsh_history
+.bash_history
