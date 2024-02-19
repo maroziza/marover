@@ -14,7 +14,7 @@ export function I2Cbus() {
                     (addr>>>0).toString(16),": ",
                     (byte>>>0).toString(2), "(0x",(byte>>>0).toString(16),")");
 
-                    },
+                },
                 blockWriter: function(block) {
                     // todo set or check block address
                     // todo write to bus
