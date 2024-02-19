@@ -21,3 +21,5 @@ lightRelay = relays.nextBlock(2) // high beam, low beam
 var control= {
     motorRelays, motorPwm, motorDrive
 }
+screen.init();
+lightRelay(0);

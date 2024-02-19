@@ -9,13 +9,17 @@ export function I2Cbus() {
             return {
                 writeToAddress: function() { return (addr<<1)+1; },
                 byteWriter: function(byte) {
-                    console.log("i2c byteWrite", addr,": ",block);
+                    byte = 0xFF &byte;
+                    console.log("i2c byteWrite",
+                    (addr>>>0).toString(16),": ",
+                    (byte>>>0).toString(2), "(0x",(byte>>>0).toString(16),")");
 
                     },
                 blockWriter: function(block) {
                     // todo set or check block address
                     // todo write to bus
-                    console.log("i2c blockWrite", addr,": ",block);
+                    block[0]>>>=1;
+                    console.log("i2cset -y 13",block.toString().replaceAll(',',' '), "i #", addr===block[0]);
                     }
                 }
             }

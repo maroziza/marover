@@ -32,6 +32,7 @@ export function SSD1306(dev, w=128, h=64, flipped = false) {
                 OSC_FREQ, 0x80, // D5 80
                 0x8d, 0x14, ON      // magic numbers from datasheet
         ],
+        init: function () { this.wri(this.initData); },
         gotoPage: function() {
 
         },
