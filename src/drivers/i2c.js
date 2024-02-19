@@ -19,7 +19,7 @@ export function I2Cbus() {
                     // todo set or check block address
                     // todo write to bus
                     block[0]>>>=1;
-                    console.log("i2cset -y 13",block.toString().replaceAll(',',' '), "i #", addr===block[0]);
+                    console.log("sudo i2cset -y 13",block.toString().replaceAll(',',' '), "i #", addr===block[0]);
                     }
                 }
             }
