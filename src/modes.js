@@ -6,16 +6,17 @@ import {I2Cbus} from "drivers/i2c.js";
 var helv = undefined; // todo fonts
 
 // SSD1306.find(i2c) // try to find by default addresses
+var
+i2c = new I2Cbus(),
+screen = new SSD1306(i2c.device(0x3c), 128,64, false),
+relays = new PCF8574(i2c.device(0x20));
 
-var i2c = new I2Cbus(),
- screen = new SSD1306(i2c.device(0x3c), 128,64, false),
- relays = new PCF8574(i2c.device(0x20));
-
-var motorRelays = relays.nextBlock(3),
+var
+motorRelays = relays.nextBlock(3), // forward, backward, fullThrottle
 motorPwm = screen.nextLabel(helv, "motor"),
 motorDrive = RelayDrive(motorPwm, motorRelays),
-steerPwm = screen.nextLabel(helv, "steer")
-
+steerPwm = screen.nextLabel(helv, "steer"),
+lightRelay = relays.nextBlock(2) // high beam, low beam
 ;
 var control= {
     motorRelays, motorPwm, motorDrive
