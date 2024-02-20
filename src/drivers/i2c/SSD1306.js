@@ -22,21 +22,27 @@ const VOLTAGE_SELECT = 0xDB;
 export function SSD1306(dev, w=128, h=64, flipped = false) {
     return {
         typical: [0x3c, 0x3d],
-        wri: dev.blockWriter,
+        write: dev.blockWriter,
         // todo flip
-        initData: [dev.writeToAddress(), 0,
+        initData: new Uint8Array([dev.writeToAddress(), 0,
                 OFF,                // AF
                 MUX_RATIO, h-1,     // A8, 3F (for h=64)
                 START_DISPLAY, 0x00,
                 ADDRESS, MODE_PAGE, //
                 OSC_FREQ, 0x80, // D5 80
                 0x8d, 0x14, ON      // magic numbers from datasheet
-        ],
-        init: function () { this.wri(this.initData); },
+        ]).buffer,
+        init: function () { this.write(this.initData); },
         gotoPage: function() {
 
         },
-
+        drawLetters(font, text) {
+            for(var i =0; i<text.length;i++) {
+            //console.log(font[text.codePointAt(i)]);
+            this.write(font[text.codePointAt(i)]);
+//                this.write(font[text.codePointAt(i)]]);
+            }
+        },
 
 
         label(font) {
@@ -50,6 +56,30 @@ export function SSD1306(dev, w=128, h=64, flipped = false) {
         nextLabel: function(font, caption)  {
             return this.label(this.allocatedLabels++, font, caption);
 
+        },
+        prepareFont: function(font) {
+            var out = {};
+            for(var k in font.chars) {
+                var c = font.chars[k];
+                var bmp = c.bitmap.split(" ").map(
+                (x)=>x.match(/../g).map((r)=>Number
+                    .parseInt(r,16)
+                    .toString(2)
+                    .padStart(8,"0")
+
+                ).join('')).reverse();
+var bytes = [];
+for (var x = 0; x < c.bbx[0]; x++) {
+bytes.push(Number.parseInt(
+bmp.map((str)=>str.charAt(x)).join("")
+,2));
+    }
+//console.log(c.bbx);
+// todo pad >>>
+                out[k] = new Uint8Array([dev.writeToAddress(), 0x40, ... bytes ]).buffer;
+            };
+
+            return out;
         }
     }
 }

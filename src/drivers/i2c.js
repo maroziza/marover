@@ -1,3 +1,6 @@
+import * as os from "os";
+import {ioctl} from "ioctl.so";
+
 export function I2Cbus() {
     return {
         find: function(driver) {
@@ -6,7 +9,12 @@ export function I2Cbus() {
                 }
             },
          device: function(addr) {
+            var file =  os.open("/dev/i2c-13", os.O_RDWR);
+            var c = ioctl (file , 0x0703, addr);
+            console.log("open",file, c);
+
             return {
+                file,
                 writeToAddress: function() { return (addr<<1)+1; },
                 byteWriter: function(byte) {
                     byte = 0xFF &byte;
@@ -16,10 +24,9 @@ export function I2Cbus() {
 
                 },
                 blockWriter: function(block) {
-                    // todo set or check block address
-                    // todo write to bus
-                    block[0]>>>=1;
-                    console.log("sudo i2cset -y 13",block.toString().replaceAll(',',' '), "i #", addr===block[0]);
+                    // for linux we should specify
+                    os.write(file,block, 1, block.byteLength-1);
+console.log(file, block.byteLength);
                     }
                 }
             }
