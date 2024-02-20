@@ -19,9 +19,9 @@ var roman = screen.prepareFont(Schoolbook);
 
 var
 motorRelays = relays.nextBlock(3), // forward, backward, fullThrottle
-motorPwm = screen.nextLabel(regular, "motor"),
+motorPwm = screen.nextLabel(regular, "motor: "),
 motorDrive = RelayDrive(motorPwm, motorRelays),
-steerPwm = screen.nextLabel(roman, "steer"),
+steerPwm = screen.nextLabel(regular, "steer: "),
 lightRelay = relays.nextBlock(2) // high beam, low beam
 ;
 var control= {
@@ -29,5 +29,5 @@ var control= {
 }
 screen.init();
 //lightRelay(0);
-motorPwm("ll l  l!");
-//steerPwm("256.   4Volts   ");
+motorPwm("300 — 200");
+steerPwm("400 ");
