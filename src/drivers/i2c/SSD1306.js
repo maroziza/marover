@@ -25,30 +25,36 @@ export function SSD1306(dev, w=128, h=64, flipped = false) {
         write: dev.blockWriter,
         // todo flip
         initData: new Uint8Array([dev.writeToAddress(), 0,
-                OFF,                // AF
-                MUX_RATIO, h-1,     // A8, 3F (for h=64)
-                START_DISPLAY, 0x00,
-                ADDRESS, MODE_PAGE, //
-                OSC_FREQ, 0x80, // D5 80
+                OFF,                    // AF
+                MUX_RATIO, h-1,         // A8, 3F (for h=64)
+                START_DISPLAY, 0x00,    // D3 00
+                ADDRESS, MODE_PAGE,     // 20 02
+                OSC_FREQ, 0x80,         // D5 80
                 0x8d, 0x14, ON      // magic numbers from datasheet
         ]).buffer,
         init: function () { this.write(this.initData); },
-        gotoPage: function() {
-
+        gotoPage: function(addr) {
+//            this.write(Uint8Array.from([5,                    0, 0x20, 0, 40,0,0,0]).buffer);
         },
         drawLetters(font, text) {
+    //       if(! text instanceof String) return;
             for(var i =0; i<text.length;i++) {
-            //console.log(font[text.codePointAt(i)]);
-            this.write(font[text.codePointAt(i)]);
-//                this.write(font[text.codePointAt(i)]]);
+                const c = font[text.codePointAt(i)];
+  //              if(!c) { console.log(font, text.codePointAt(i)); continue;}
+                this.write(c);
             }
         },
 
 
-        label(font) {
-            return function(position, text) {
-                this.gotoPage(position);
-                this.outLetters(font, text);
+
+
+
+        label(position, font, lab) {
+            var self = this;
+            return function(text) {
+                self.gotoPage(position);
+                self.drawLetters(font, lab);
+                self.drawLetters(font, text);
             }
         },
 
@@ -69,16 +75,22 @@ export function SSD1306(dev, w=128, h=64, flipped = false) {
 
                 ).join('')).reverse();
 var bytes = [];
+if(c.bbx[2]>0)
+for (var xpad = Math.max(0, c.bbx[2]); xpad > 0; xpad--) bytes.push(0);
 for (var x = 0; x < c.bbx[0]; x++) {
-bytes.push(Number.parseInt(
+
+var line= Number.parseInt(
 bmp.map((str)=>str.charAt(x)).join("")
-,2));
-    }
-//console.log(c.bbx);
-// todo pad >>>
+,2)
+
+<< Math.max(0, 7-c.bbx[1]+c.bbx[3])
+;
+
+bytes.push(    line);
+}
                 out[k] = new Uint8Array([dev.writeToAddress(), 0x40, ... bytes ]).buffer;
             };
-
+           out[" ".codePointAt(0)] = new Uint8Array([dev.writeToAddress(), 0x40, 0,0,0]).buffer;
             return out;
         }
     }

@@ -32,7 +32,7 @@ while(!match.done) {
 var dir = "fonts/MediumR";
 var data = JSON.stringify({chars:glyphs});
 os.mkdir(dir)
-var out = std.open(dir+"/Schoolbook.json","w");
+var out = std.open(dir+"/Helvetica.json","w");
 out.puts("export default\n");
 out.puts(data);
 out.puts(";\n");
