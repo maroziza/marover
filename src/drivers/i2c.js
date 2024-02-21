@@ -25,7 +25,7 @@ export function I2Cbus() {
                 },
                 blockWriter: function(block) {
                     // for linux we should specify address at ioctl, so ommiting here
-//                    console.log("i2c block fd:", file, block);
+                   // console.log("i2c block fd:", file, block.byteLength);
 
                     os.write(file, block, 1, block.byteLength-1);
                     }

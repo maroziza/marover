@@ -17,6 +17,8 @@ const LINE_START = 0x40;
 const OSC_FREQ = 0xD5;
 const CHARGE_PUMP = 0xD9;
 const VOLTAGE_SELECT = 0xDB;
+const COLUMN_RANGE = 0x21;
+const PAGE_RANGE = 0x22;
 //scroll commands
 
 
@@ -24,38 +26,51 @@ export function SSD1306(dev, w=128, h=64, flipped = false) {
     return {
         typical: [0x3c, 0x3d],
         write: dev.blockWriter,
-        // todo flip
-        initData: new Uint8Array([dev.writeToAddress(), 0,
+
+        bufferData: function(cmds) {
+            // todo current linux driver is limited to 26 bytes, good place to check
+            return Uint8Array.from([dev.writeToAddress(), ...cmds]).buffer;
+        },
+        initData: [0,
                 OFF, LINE_START,        // AF, 40
                 MUX_RATIO, h-1,         // A8 3F (for h=64)
                 START_DISPLAY, 0x00,    // D3 00
-                ADDRESS, MODE_PAGE,     // 20 02
-                OSC_FREQ, 0x80,         // D5 80
+                ADDRESS, MODE_VERTICAL,     // 20 02
+                OSC_FREQ, 0xf0,         // D5 80
+                0x81, 0x10,
+                flipped ? 0xC8 : 0xC0,
+                flipped ? 0xA1 : 0xA0,
                 0x8d, 0x14, ON      // magic numbers from datasheet
-        ]).buffer,
-        init: function () { this.write(this.initData); },
-        gotoPage: function(addr) {
-            console.log("addr" ,addr);
-            this.write(Uint8Array.from([dev.writeToAddress(), 0, 0xB0 | (0x7&(addr>>>1)),
-            (addr & 1) ? 0x10 : 0x14, 0]).buffer);
+        ],
+        init: function () { this.write(
+            this.bufferData(this.initData)); },
+
+        gotoPage: function(font, addr) {
+           // console.log("addr" ,addr);
+            this.write(this.bufferData([0,
+            ADDRESS, font.lines == 1 ? MODE_HORIZONTAL : MODE_VERTICAL,
+            PAGE_RANGE,addr, font.lines == 1 ? 7 : addr+font.lines-1,
+            COLUMN_RANGE, 0, 0x7F]));
+        },
+        showFont(font) {
+            for(var a in font)
+                this.write(font[a]);
         },
         drawLetters(font, text) {
     //       if(! text instanceof String) return;
             for(var i =0; i<text.length;i++) {
                 const c = font[text.codePointAt(i)];
-  //              if(!c) { console.log(font, text.codePointAt(i)); continue;}
+                if(!c) { console.log("Char not found", text.charAt(i) ); continue;}
                 this.write(c);
             }
         },
 
 
 
-
-
         label(position, font, lab) {
             var self = this;
             return function(text) {
-                self.gotoPage(position);
+                self.gotoPage(font, position);
                 self.drawLetters(font, lab); // this only once needed
                 // todo we can optimise this by just updating value
                 self.drawLetters(font, text);
@@ -67,7 +82,25 @@ export function SSD1306(dev, w=128, h=64, flipped = false) {
             return this.label(this.allocatedLabel++, font, caption);
 
         },
-        prepareFont: function(font) {
+
+/**
+ * prepares json bdf font to direct SSD1306 commands
+ *
+ * lines -  font can span multiple pages vertically, lines select how
+ *          many lines to prepare for use. check window size for correct
+ *          render
+ * mask -   is xored to every line, can be used to underline (1),
+ *          strikethrough(8), boxing(0x81), inverting (0xFF),
+ */
+        prepareFont: function(font, lines=0, mask = 0, baseline = 7, spacing = 0) {
+            // todo lines autodetec
+            if(lines == 0) lines = 1
+
+            var fbbx = font.head.FONTBOUNDINGBOX
+                    .split(" ")
+                    .map((x)=>Number.parseInt(x,10));
+            var bl = -baseline+fbbx[1]+fbbx[3];
+
             var out = {};
             for(var k in font.chars) {
                 var c = font.chars[k];
@@ -78,23 +111,36 @@ export function SSD1306(dev, w=128, h=64, flipped = false) {
                     .padStart(8,"0")
 
                 ).join('')).reverse();
-var bytes = [];
-if(c.bbx[2]>0)
-for (var xpad = Math.max(0, c.bbx[2]); xpad > 0; xpad--) bytes.push(0);
-for (var x = 0; x < c.bbx[0]; x++) {
 
-var line= Number.parseInt(
-bmp.map((str)=>str.charAt(x)).join("")
-,2)
+                var bytes = [0x40];
+                if((c.bbx[2]+spacing)>0)
+                    for(var xpad = spacing + c.bbx[2]; xpad > 0; xpad--)
+                       for(var y = 0; y < lines; y++)
+                            bytes.push(0xFF&(mask>>>(8*y)));
 
-<< Math.max(0, 7-c.bbx[1]+c.bbx[3])
-;
+                for (var x = 0; x < c.bbx[0]; x++) {
+                    var col = bmp.map((str)=>str.charAt(x))
+                        .join("")
+                    var line = Number.parseInt(col,2)
+                               <<  Math.max(0, bl-c.bbx[1]-c.bbx[3] )
+                               >>> -Math.min(0, bl-c.bbx[1]-c.bbx[3] )
+                               ^ mask;
 
-bytes.push(    line);
-}
-                out[k] = new Uint8Array([dev.writeToAddress(), 0x40, ... bytes ]).buffer;
+                    bytes.push(0xFF&(line>>>0));
+                    if(lines>1)
+                        for(var y = lines-1; y > 0; y--)
+                            bytes.push(0xFF&(line>>>8));
+                }
+                out[k] = this.bufferData(bytes);
             };
-           out[" ".codePointAt(0)] = new Uint8Array([dev.writeToAddress(), 0x40, 0,0,0]).buffer;
+            // fix space to 3 pixels, how to adjust, use some props??
+            var space = [0x40];
+            for(var xpad = spacing + fbbx[0]/4; xpad > 0; xpad--)
+                for(var y = 0; y < lines; y++)
+                    space.push(0xFF&(mask>>>(8*y)));
+
+            out[" ".codePointAt(0)] = this.bufferData(space);
+            out.lines = lines;
             return out;
         }
     }
