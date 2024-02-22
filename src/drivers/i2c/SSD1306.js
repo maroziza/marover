@@ -37,6 +37,7 @@ export function SSD1306(dev, w=128, h=64, flipped = false) {
                 START_DISPLAY, 0x00,    // D3 00
                 ADDRESS, MODE_VERTICAL,     // 20 02
                 OSC_FREQ, 0xf0,         // D5 80
+                0xda, h>32 ? 0x10: 0x2,
                 0x81, 0x10,
                 flipped ? 0xC8 : 0xC0,
                 flipped ? 0xA1 : 0xA0,

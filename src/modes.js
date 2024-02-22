@@ -43,9 +43,9 @@ screen.init();
 screen.gotoPage(roman, 0);
 screen.drawLetters(roman, "Hello \uE015bramfaktura!!")
 screen.gotoPage(regular, 2);
-/**screen.drawLetters(regular, "Never \uE015 underestimate your enemy please ");
+screen.drawLetters(regular, "Never \uE015 underestimate your enemy please ");
 screen.drawLetters(bold,"never");
 screen.drawLetters(regular," forgive forget be vigilant. привітики вам з криївки передає япручок ґї       \ue006");
-*/
-screen.showFont(icons8);
+
+//screen.showFont(icons8);
 
