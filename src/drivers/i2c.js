@@ -1,5 +1,5 @@
 import * as os from "os";
-import {ioctl} from "ioctl.so";
+import * as i2c from "ioctl.so";
 
 export function I2Cbus() {
     return {
@@ -10,7 +10,7 @@ export function I2Cbus() {
             },
          device: function(addr) {
             var file =  os.open("/dev/i2c-13", os.O_RDWR);
-            var c = ioctl (file , 0x0703, addr);
+            var c = i2c.ioctl(file , 0x0703, addr);
             console.log("open",file, c);
 
             return {
@@ -28,8 +28,12 @@ export function I2Cbus() {
                    // console.log("i2c block fd:", file, block.byteLength);
 
                     os.write(file, block, 1, block.byteLength-1);
-                    }
                 }
-            }
+                ,
+                blockReader: function(cmd, block) {
+                    return i2c.i2c_read_block(file, addr, cmd, block);
+                }
+            }}
 
-        }}
+    }
+}

@@ -38,7 +38,13 @@ lightRelay = relays.nextBlock(2) // high beam, low beam
     motorRelays, motorPwm, motorDrive
 }*/
 
-
+var buf = new ArrayBuffer(27);
+var imu =  i2c.device(0x68)
+imu.blockWriter(new Uint8Array([0x74,1]).buffer);
+for (var i =0; i<10;i++) {
+var res = imu.blockReader(0x74, buf);
+console.log(new Uint8Array(buf), res);
+}
 screen.init();
 screen.gotoPage(roman, 0);
 screen.drawLetters(roman, "Hello \uE015bramfaktura!!")

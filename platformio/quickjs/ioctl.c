@@ -1,7 +1,7 @@
 /*
- * QuickJS: Example of C module
- * 
- * Copyright (c) 2017-2018 Fabrice Bellard
+ * QuickJS: i2c linux support library
+ *
+ * Copyright (c) 2024 Maro Ziza
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,26 +22,81 @@
  * THE SOFTWARE.
  */
 #include "quickjs.h"
+#include <linux/i2c-dev.h>
+#include <linux/i2c.h>
+#include <errno.h>
 #include <sys/ioctl.h>
 #define countof(x) (sizeof(x) / sizeof((x)[0]))
-
-
-static JSValue js_fib(JSContext *ctx, JSValueConst this_val,
-                      int argc, JSValueConst *argv)
+//#define js_get_errno
+static ssize_t js_get_errno(ssize_t ret)
 {
-    int a,b,c, res;
-    if (JS_ToInt32(ctx, &a, argv[0]))
-        return JS_EXCEPTION;
-    if (JS_ToInt32(ctx, &b, argv[1]))
-        return JS_EXCEPTION;
-    if (JS_ToInt32(ctx, &c, argv[2]))
-        return JS_EXCEPTION;
-    res = ioctl(a,b,c);
+    if (ret == -1)
+        ret = -errno;
+    return ret;
+}
+
+static JSValue js_ioctl(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    int fd,b,c, res;
+    if (JS_ToInt32(ctx, &fd, argv[0])) return JS_EXCEPTION;
+    if (JS_ToInt32(ctx, &b, argv[1])) return JS_EXCEPTION;
+    if (JS_ToInt32(ctx, &c, argv[2])) return JS_EXCEPTION;
+    res = js_get_errno(ioctl(fd,b,c));
     return JS_NewInt32(ctx, res);
 }
 
+static JSValue js_i2c_read_block(JSContext *ctx, JSValueConst this_val,
+                                int argc, JSValueConst *argv)
+{
+    int fd, arg, addr;
+
+//    uint64_t pos, len;
+    size_t size;
+    ssize_t ret;
+    uint8_t *buf;
+
+    if (JS_ToInt32(ctx, &fd, argv[0])) return JS_EXCEPTION;
+    if (JS_ToInt32(ctx, &addr, argv[1])) return JS_EXCEPTION;
+    if (JS_ToInt32(ctx, &arg, argv[2])) return JS_EXCEPTION;
+    buf = JS_GetArrayBuffer(ctx, &size, argv[3]);
+    if (!buf) return JS_EXCEPTION;
+    if (size>32)
+        return JS_ThrowRangeError(ctx, "i2c max read is 32 bytes, but should be less");
+
+
+    {
+    struct i2c_msg ioctl_msg[2] ;
+    struct i2c_rdwr_ioctl_data ioctl_data;
+    char cmd[1] = {0xFF & arg};
+
+
+        /* First message is write internal address */
+            ioctl_msg[0].len = 1;
+        ioctl_msg[0].addr = addr;
+        ioctl_msg[0].buf = cmd;
+        ioctl_msg[0].flags = 0;
+
+        /* Second message is read data */
+        ioctl_msg[1].len	= 	size;
+        ioctl_msg[1].addr	= 	addr;
+        ioctl_msg[1].buf	=	buf;
+        ioctl_msg[1].flags	=	I2C_M_RD;
+
+        /* Package to i2c message to operation i2c device */
+        ioctl_data.nmsgs	=	2;
+        ioctl_data.msgs		=	ioctl_msg;
+        ret = js_get_errno(ioctl(fd, I2C_RDWR, &ioctl_data));
+
+    }
+
+    return JS_NewInt64(ctx, ret);
+}
+
+
+
+
 static const JSCFunctionListEntry js_ioctl_funcs[] = {
-    JS_CFUNC_DEF("ioctl", 3, js_fib ),
+    JS_CFUNC_DEF("ioctl", 3, js_ioctl ),
+    JS_CFUNC_DEF("i2c_read_block", 4, js_i2c_read_block ),
 };
 
 static int js_ioctl_init(JSContext *ctx, JSModuleDef *m)

@@ -1,4 +1,4 @@
-CFLAGS=-DJS_SHARED_LIBRARY
+CFLAGS=-DJS_SHARED_LIBRARY -O
 %.so: %.o
 	$(CC) $(LDFLAGS) -shared -o $@ $^
 
