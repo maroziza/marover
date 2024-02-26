@@ -25,14 +25,27 @@ export function I2Cbus() {
                 },
                 blockWriter: function(block) {
                     // for linux we should specify address at ioctl, so ommiting here
-                   // console.log("i2c block fd:", file, block.byteLength);
+                    if(block instanceof ArrayBuffer) {
+                        if(block.byteLength > 27)
+                            console.log("i2c big block fd:", file, block.byteLength);
+                        else
+                            os.write(file, block, 1, block.byteLength-1);
+                    } else if (block instanceof Array) {
+                        for(var i = 0; i < block.length; i++ ) {
+                            os.write(file, block[i], 1, block[i].byteLength-1);
+                            console.log("i2c part block fd:", file, block[i].byteLength);
 
-                    os.write(file, block, 1, block.byteLength-1);
+                        }
+                    } else {
+                        throw {"Invalid":block};
+                    }
                 }
                 ,
                 blockReader: function(cmd, block) {
                     return i2c.i2c_read_block(file, addr, cmd, block);
-                }
+                },
+                wordReader: function(cmd) { return null;} ,
+                byteReader: function(cmd) { return null;}
             }}
 
     }

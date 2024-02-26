@@ -29,7 +29,19 @@ export function SSD1306(dev, w=128, h=64, flipped = false) {
 
         bufferData: function(cmds) {
             // todo current linux driver is limited to 26 bytes, good place to check
-            return Uint8Array.from([dev.writeToAddress(), ...cmds]).buffer;
+            const chunkSize = 25;
+
+            if(cmds.length<chunkSize)
+                return Uint8Array.from([dev.writeToAddress(), ...cmds]).buffer;
+
+            var out = [];
+            for (let i = 1; i < cmds.length; i += chunkSize) {
+                out.push( Uint8Array.from([
+                    dev.writeToAddress(), cmds[0],
+                    ...cmds.slice(i, i + chunkSize)]).buffer);
+            }
+
+            return out;
         },
         initData: [0,
                 OFF, LINE_START,        // AF, 40
@@ -38,7 +50,7 @@ export function SSD1306(dev, w=128, h=64, flipped = false) {
                 ADDRESS, MODE_VERTICAL,     // 20 02
                 OSC_FREQ, 0xf0,         // D5 80
                 0xda, h>32 ? 0x10: 0x2,
-                0x81, 0x10,
+                CONTRAST, 0xa0,
                 flipped ? 0xC8 : 0xC0,
                 flipped ? 0xA1 : 0xA0,
                 0x8d, 0x14, ON      // magic numbers from datasheet
@@ -100,11 +112,10 @@ export function SSD1306(dev, w=128, h=64, flipped = false) {
             var fbbx = font.head.FONTBOUNDINGBOX
                     .split(" ")
                     .map((x)=>Number.parseInt(x,10));
-            var bl = -baseline+fbbx[1]+fbbx[3];
+            var bl = baseline+fbbx[1]-Number.parseInt(font.head.FONT_DESCENT,10);
+            console.log(bl);
 
-            var out = {};
-            for(var k in font.chars) {
-                var c = font.chars[k];
+            function prepareChar(c) {
                 var bmp = c.bitmap.split(" ").map(
                 (x)=>x.match(/../g).map((r)=>Number
                     .parseInt(r,16)
@@ -122,16 +133,26 @@ export function SSD1306(dev, w=128, h=64, flipped = false) {
                 for (var x = 0; x < c.bbx[0]; x++) {
                     var col = bmp.map((str)=>str.charAt(x))
                         .join("")
+
                     var line = Number.parseInt(col,2)
-                               <<  Math.max(0, bl-c.bbx[1]-c.bbx[3] )
-                               >>> -Math.min(0, bl-c.bbx[1]-c.bbx[3] )
+                               <<  Math.max(0, -bl+c.bbx[1]+c.bbx[3] )
+                               >>> -Math.min(0, -bl+c.bbx[1]+c.bbx[3] )
                                ^ mask;
 
-                    bytes.push(0xFF&(line>>>0));
-                    if(lines>1)
-                        for(var y = lines-1; y > 0; y--)
-                            bytes.push(0xFF&(line>>>8));
+//                    bytes.push(0xFF&(line));
+  //                  if(lines>1)
+                        for(var y = 0; y < lines; y++)
+                            bytes.push(0xFF & (line >>> (8*y)));
                 }
+                return bytes;
+            }
+
+
+
+            var out = {};
+            for(var k in font.chars) {
+                var c = font.chars[k];
+                var bytes = prepareChar(c, );
                 out[k] = this.bufferData(bytes);
             };
             // fix space to 3 pixels, how to adjust, use some props??
@@ -141,6 +162,7 @@ export function SSD1306(dev, w=128, h=64, flipped = false) {
                     space.push(0xFF&(mask>>>(8*y)));
 
             out[" ".codePointAt(0)] = this.bufferData(space);
+            // todo default char
             out.lines = lines;
             return out;
         }
