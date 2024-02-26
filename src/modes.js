@@ -11,12 +11,12 @@ import {I2Cbus} from "drivers/i2c.js";
 
 import Helvetica from "fonts/reduced/CourierMR8.json";
 import Bold from "fonts/reduced/CourierBR8.json";
-import Schoolbook from "fonts/reduced/TimesMR24.json";
+import Schoolbook from "fonts/reduced/TerminusMR32.json";
 import Icons from 'fonts/SijiMR10.json'
 
 // loading controllers
 import {RelayDrive} from "control/drive/relay.js";
-
+import * as std from "std";
 
 // SSD1306.find(i2c) // try to find by default addresses
 var
@@ -32,7 +32,7 @@ Object.assign(regular, regular, icons8);
 
 var bold = screen.prepareFont(Bold,1,0,-3);
 
-var roman = screen.prepareFont(Schoolbook, 4 ,0x80000001, -11,0);
+var roman = screen.prepareFont(Schoolbook, 4 ,0x80000001, -0,0);
 //var icons16 = screen.prepareFont(Icons, 3, 0x8001, -6,-2);
 //Object.assign(roman, icons16, roman);
 
@@ -58,14 +58,19 @@ console.log(new Uint8Array(buf), res);
 }
 */
 screen.init();
-screen.gotoPage(roman, 0);
 //screen.drawLetters(roman, "Hello \uE0ebbramfaktura!!")
 
-screen.drawLetters(roman, "202%studio")
-screen.gotoPage(roman, 4);
-screen.drawLetters(roman, "ADHD LAB")
-
-
+//screen.drawLetters(roman, "202%studio")
+//screen.gotoPage(roman, 4);
+while(true) {
+    const start = Date.now();
+screen.gotoPage(roman, 0);
+const read = relays.reader();
+screen.drawLetters(roman, read.toString(2).padStart(8,"0"));
+motorRelays(read>>>7);
+console.log(Date.now()-start," ms");
+}
+/*
 
 screen.gotoPage(regular, 2);
 screen.drawLetters(regular, "Never \uE032 underestimate your enemy please ");
@@ -75,3 +80,4 @@ screen.drawLetters(regular," forgive forget be vigilant. привітики ва
 //screen.showFont(icons8);
 
 
+*/

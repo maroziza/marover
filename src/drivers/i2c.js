@@ -21,7 +21,8 @@ export function I2Cbus() {
                     console.log("i2c byteWrite",
                     (addr>>>0).toString(16),": ",
                     (byte>>>0).toString(2), "(0x",(byte>>>0).toString(16),")");
-
+                    const buf = Uint8Array.from([byte]).buffer;
+                    os.write(file, buf,0,1);
                 },
                 blockWriter: function(block) {
                     // for linux we should specify address at ioctl, so ommiting here
@@ -33,7 +34,7 @@ export function I2Cbus() {
                     } else if (block instanceof Array) {
                         for(var i = 0; i < block.length; i++ ) {
                             os.write(file, block[i], 1, block[i].byteLength-1);
-                            console.log("i2c part block fd:", file, block[i].byteLength);
+                         //   console.log("i2c part block fd:", file, block[i].byteLength);
 
                         }
                     } else {
@@ -44,8 +45,14 @@ export function I2Cbus() {
                 blockReader: function(cmd, block) {
                     return i2c.i2c_read_block(file, addr, cmd, block);
                 },
+                wordRegReader: function(cmd) { return null;} ,
+                byteRegReader: function(cmd) { return blockReader(cmd);},
                 wordReader: function(cmd) { return null;} ,
-                byteReader: function(cmd) { return null;}
+                byteReader: function() {
+                    const buf = new ArrayBuffer(1);
+                    const res = os.read(file,buf,0,1);
+                    return new Uint8Array(buf)[0];
+                }
             }}
 
     }

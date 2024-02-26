@@ -1,4 +1,5 @@
 export function PCF8574(dev) { return {
+    reader: dev.byteReader,
     writer: dev.byteWriter,
     allocated: 0,
     preset: 0,

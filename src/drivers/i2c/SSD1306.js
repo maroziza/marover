@@ -25,6 +25,7 @@ const PAGE_RANGE = 0x22;
 export function SSD1306(dev, w=128, h=64, flipped = false) {
     return {
         typical: [0x3c, 0x3d],
+        read: dev.byteReader,
         write: dev.blockWriter,
 
         bufferData: function(cmds) {
@@ -55,8 +56,9 @@ export function SSD1306(dev, w=128, h=64, flipped = false) {
                 flipped ? 0xA1 : 0xA0,
                 0x8d, 0x14, ON      // magic numbers from datasheet
         ],
-        init: function () { this.write(
-            this.bufferData(this.initData)); },
+        init: function () {
+            if(this.read()>10) // init only if not inited
+            this.write(this.bufferData(this.initData)); },
 
         gotoPage: function(font, addr) {
            // console.log("addr" ,addr);
