@@ -1,4 +1,5 @@
 export function PCF8574(dev) { return {
+    typical: [0x20],
     reader: dev.byteReader,
     writer: dev.byteWriter,
     allocated: 0,
