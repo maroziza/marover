@@ -71,28 +71,17 @@ const start = Date.now();
 var t = 0;
 while (true) {
 //for(var i = 3150; i  < 3860; i+=1) {
-const i = Math.round((1+Math.sin(t++/100))*((3860-3150)/2)+3150);
+const ca = pca.channel(15);
+const cb = pca.channel(0);
+const i = Math.round((1+Math.sin(t/100))*((3860-3150)/2)+3150);
     screen.gotoPage(roman, 0);
     screen.drawLetters(roman, i.toString().padStart(8,"0"));
-    pca.channel(1)(i);
-  //  os.sleep(1);
+    ca(i);
+    cb((1+Math.sin(t/50))*2048);
 
-    if(t%1000==0) console.log((Date.now()-start)/t," ms");
+  //  os.sleep(100);
+
+    if(t++%1000==0) console.log((Date.now()-start)/t," ms");
 
 }
 
-
-var i =0;
-while(true) {
-    const start = Date.now();
-//    const read = relays.reader();
-const read = 0;
-
-    screen.gotoPage(roman, 0);
-    screen.drawLetters(roman, read.toString(2).padStart(8,"0"));
- //   motorRelays(read>>>7);
-//    leds(i=(i+10)%4096);
-
-    console.log(Date.now()-start," ms");
-    break;
-}
