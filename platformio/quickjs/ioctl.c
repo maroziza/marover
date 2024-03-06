@@ -39,8 +39,12 @@ static JSValue js_ioctl(JSContext *ctx, JSValueConst this_val, int argc, JSValue
     int fd,b,c, res;
     if (JS_ToInt32(ctx, &fd, argv[0])) return JS_EXCEPTION;
     if (JS_ToInt32(ctx, &b, argv[1])) return JS_EXCEPTION;
-    if (JS_ToInt32(ctx, &c, argv[2])) return JS_EXCEPTION;
-    res = js_get_errno(ioctl(fd,b,&c));
+    if(JS_IsUndefined(argv[2])) {
+	res = js_get_errno(ioctl(fd,b,&c));
+    }else {
+	if (JS_ToInt32(ctx, &c, argv[2])) return JS_EXCEPTION;
+	res = js_get_errno(ioctl(fd,b,c));
+    }
 //    if(res) return JS_EXCEPTION;
     return JS_NewInt32(ctx, c);
 }
