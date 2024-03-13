@@ -6,6 +6,7 @@ while true; do
     sleep 0.2;
     inotifywait -e modify -q `find  ../src . `;
     kill -9 $PI 2> /dev/null > /dev/null
+    killall -9 qjs
     wait $PI
-    sleep 0.2;
+    sleep 0.3;
 done

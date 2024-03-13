@@ -1,60 +1,126 @@
+import {unpackChannels} from "./sbus.js";
+
 const CRSF_CRC_POLY = 0xd5;
-const CRSF_SYNC_BYTE = 0xC8;
 const CRSF_PAYLOAD_SIZE_MAX = 62;
 
-const CRSF_FRAMETYPE = {
-    '02': 'GPS',
-    '07': 'VARIO',
-    '08': 'BATTERY_SENSOR',
-    '09': 'BARO_ALTITUDE',
-    '14': 'LINK_STATISTICS',
-    '10': 'OPENTX_SYNC',
-    '3A': 'RADIO_ID',
-    '16': 'RC_CHANNELS_PACKED',
-    '1E': 'ATTITUDE',
-    '21': 'FLIGHT_MODE',
-    // Extended Header Frames, range: 0x28 to 0x96
-    '28': 'DEVICE_PING',
-    '29': 'DEVICE_INFO',
-    '2B': 'PARAMETER_SETTINGS_ENTRY',
-    '2C': 'PARAMETER_READ',
-    '2D': 'PARAMETER_WRITE',
+const LINK_STATISTICS = 0x14;
+const RC_CHANNELS_PACKED = 0x16;
+const sizes = {};
+sizes[LINK_STATISTICS] = 12;
+sizes[RC_CHANNELS_PACKED] =  24;
+console.log(JSON.stringify(sizes));
 
-    //'2E': 'ELRS_STATUS', ELRS good/bad packet count and status flags
-
-    '32': 'COMMAND',
-    // KISS frames
-    '78': 'KISS_REQ',
-    '79': 'KISS_RESP',
-    // MSP commands
-    '7A': 'MSP_REQ',   // response request using msp sequence as command
-    '7B': 'MSP_RESP',  // reply with 58 byte chunked binary
-    '7C': 'MSP_WRITE', // write with 8 byte chunked binary (OpenTX outbound telemetry buffer limit)
-    // Ardupilot frames
-    '80': 'ARDUPILOT_RESP',
-};
+const crc8tab = [
+    0x00, 0xD5, 0x7F, 0xAA, 0xFE, 0x2B, 0x81, 0x54, 0x29, 0xFC, 0x56, 0x83, 0xD7, 0x02, 0xA8, 0x7D,
+    0x52, 0x87, 0x2D, 0xF8, 0xAC, 0x79, 0xD3, 0x06, 0x7B, 0xAE, 0x04, 0xD1, 0x85, 0x50, 0xFA, 0x2F,
+    0xA4, 0x71, 0xDB, 0x0E, 0x5A, 0x8F, 0x25, 0xF0, 0x8D, 0x58, 0xF2, 0x27, 0x73, 0xA6, 0x0C, 0xD9,
+    0xF6, 0x23, 0x89, 0x5C, 0x08, 0xDD, 0x77, 0xA2, 0xDF, 0x0A, 0xA0, 0x75, 0x21, 0xF4, 0x5E, 0x8B,
+    0x9D, 0x48, 0xE2, 0x37, 0x63, 0xB6, 0x1C, 0xC9, 0xB4, 0x61, 0xCB, 0x1E, 0x4A, 0x9F, 0x35, 0xE0,
+    0xCF, 0x1A, 0xB0, 0x65, 0x31, 0xE4, 0x4E, 0x9B, 0xE6, 0x33, 0x99, 0x4C, 0x18, 0xCD, 0x67, 0xB2,
+    0x39, 0xEC, 0x46, 0x93, 0xC7, 0x12, 0xB8, 0x6D, 0x10, 0xC5, 0x6F, 0xBA, 0xEE, 0x3B, 0x91, 0x44,
+    0x6B, 0xBE, 0x14, 0xC1, 0x95, 0x40, 0xEA, 0x3F, 0x42, 0x97, 0x3D, 0xE8, 0xBC, 0x69, 0xC3, 0x16,
+    0xEF, 0x3A, 0x90, 0x45, 0x11, 0xC4, 0x6E, 0xBB, 0xC6, 0x13, 0xB9, 0x6C, 0x38, 0xED, 0x47, 0x92,
+    0xBD, 0x68, 0xC2, 0x17, 0x43, 0x96, 0x3C, 0xE9, 0x94, 0x41, 0xEB, 0x3E, 0x6A, 0xBF, 0x15, 0xC0,
+    0x4B, 0x9E, 0x34, 0xE1, 0xB5, 0x60, 0xCA, 0x1F, 0x62, 0xB7, 0x1D, 0xC8, 0x9C, 0x49, 0xE3, 0x36,
+    0x19, 0xCC, 0x66, 0xB3, 0xE7, 0x32, 0x98, 0x4D, 0x30, 0xE5, 0x4F, 0x9A, 0xCE, 0x1B, 0xB1, 0x64,
+    0x72, 0xA7, 0x0D, 0xD8, 0x8C, 0x59, 0xF3, 0x26, 0x5B, 0x8E, 0x24, 0xF1, 0xA5, 0x70, 0xDA, 0x0F,
+    0x20, 0xF5, 0x5F, 0x8A, 0xDE, 0x0B, 0xA1, 0x74, 0x09, 0xDC, 0x76, 0xA3, 0xF7, 0x22, 0x88, 0x5D,
+    0xD6, 0x03, 0xA9, 0x7C, 0x28, 0xFD, 0x57, 0x82, 0xFF, 0x2A, 0x80, 0x55, 0x01, 0xD4, 0x7E, 0xAB,
+    0x84, 0x51, 0xFB, 0x2E, 0x7A, 0xAF, 0x05, 0xD0, 0xAD, 0x78, 0xD2, 0x07, 0x53, 0x86, 0x2C, 0xF9];
 
 
-function getCRC8(buf) {
-    var crc8 = 0x00;
-    var size = buf.length;
-    for (var i=0; i<size; i++) {
-        crc8 ^= buf[i];
 
-        for (var j = 0; j < 8; j++) {
-            if (crc8 & 0x80) {
-                crc8 <<= 1;
-                crc8 ^= CRSF_CRC_POLY;
+
+/**
+ * waiting adress
+ * waiting size
+ * waiting full packet
+ * checking crc
+ *
+ * Currently supported only this types of packets
+ * 14h 22d LinkStatisticsPacket
+ * 16h 24d RCFrame
+ */
+export default function CRFS(me=200) {
+    var frame = new Uint8Array(CRSF_PAYLOAD_SIZE_MAX+3);
+    var channels = new Uint16Array(16);
+    var size = 0; // desired packet size
+    var state = "self";
+    var crc = 0;
+    var stat = {packetRcPacked:0,errorSkipped:0,errorSizeTypeMismatch:0};
+
+    return {
+        channels: ()=>channels,
+        stats: ()=>stat,
+        update: function(buf, len) {
+        if(!len) len = buf.length;
+        for(var i = 0; i < len; i++) {
+            if(state === "self") {
+                if(buf[i]===me) {
+                    state = "size";
+                } else
+                if(stat) stat.errorSkipped ++;
+        //        else          console.log("CRSF", state, buf[i]);
+
+            } else if(state === "type") {
+                frame[0] = buf[i];
+                if(sizes[frame[0]] !== size) {
+                    //console.log("size mismatch:",frame[0], sizes[frame[0]] , size);
+                    if(stat) stat.errorSizeTypeMismatch++;
+                    state="self";
+                } else {
+                    state = size-2;
+                    crc = 0;
+                }
+            } else if(state === "size") {
+                size = buf[i];
+                if(size > CRSF_PAYLOAD_SIZE_MAX || size < 0) {
+                    state = "self";
+                } else {
+                    state = "type";
+
+                }
+                // todo we can check packet by size
+            } else if(state === 0) {
+                // todo check src
+                if(crc !== buf[i]) {
+                    console.log("crc check",crc, buf[i]);
+                    if(stat) stat.errorCrc++;
+                } else switch(frame[0]) {
+                    case RC_CHANNELS_PACKED:
+                        if(stat) stat.packetRcPacked++;
+                        unpackChannels(frame, channels);
+                        console.log("RC", channels);
+                        break;
+                    case 20:
+                        if(stat) stat.packetLq++;
+                      // todo link stats
+                        break;
+                    default:
+                       console.log("CRSF", size, frame.slice(0, size));
+                }
+                state = "self";
             } else {
-                crc8 <<= 1;
+                frame[-1+size-state] = buf[i];
+                // todo update crc?
+                state--;
             }
+            crc = crc8tab[crc ^ buf[i]];
+
         }
     }
-    return crc8;
-}
-
-export default function CRFS() { return {
-    update: function(buf) {
-
-    }
 };}
+
+/**
+ *  uint8_t uplink_RSSI_1;
+    uint8_t uplink_RSSI_2;
+    uint8_t uplink_Link_quality;
+    int8_t uplink_SNR;
+    uint8_t active_antenna;
+    uint8_t rf_Mode;
+    uint8_t uplink_TX_Power;
+    uint8_t downlink_RSSI;
+    uint8_t downlink_Link_quality;
+    int8_t downlink_SNR;
+*/
+

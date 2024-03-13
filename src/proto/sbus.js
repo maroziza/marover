@@ -11,15 +11,9 @@
  * 1 footer byte (0x00).
  */
 const MAX = 24;
-
-export function SBUS(gotPacket, failedPacket=undefined) { return {
-    state: new Uint8Array(MAX),
-
-    parsePacket: function(packet) {
-        var out = new Uint16Array(16);
-
-        out[0]  = (packet[1] |((packet[2] << 8) & 0x07FF));
-        out[1]  = ((packet[2] >> 3) | ((packet[3] << 5) & 0x07FF));
+export function unpackChannels(packet, out) {
+        out[0]  = ((packet[1] | (packet[2] << 8)) & 0x07FF);
+        out[1]  = ((packet[2] >>> 3) | ((packet[3] << 5) & 0x07FF));
         out[2]  = ((packet[3] >> 6) |  (packet[4] << 2) |  ((packet[5] << 10) & 0x07FF));
         out[3]  = ((packet[5] >> 1) | ((packet[6] << 7) & 0x07FF));
         out[4]  = ((packet[6] >> 4) | ((packet[7] << 4) & 0x07FF));
@@ -34,6 +28,15 @@ export function SBUS(gotPacket, failedPacket=undefined) { return {
         out[13] = ((packet[18] >> 7) | (packet[19] << 1) | ((packet[20] << 9) & 0x07FF));
         out[14] = ((packet[20] >> 2) |((packet[21] << 6) & 0x07FF));
         out[15] = ((packet[21] >> 5) |((packet[22] << 3) & 0x07FF));
+};
+
+
+export default function SBUS(gotPacket, failedPacket=undefined) { return {
+    state: new Uint8Array(MAX),
+
+    parsePacket: function(packet) {
+        var out = new Uint16Array(16);
+        unpackChannels(packet, out);
         gotPacket(out, packet[23]);
     },
     update: function(buf) {

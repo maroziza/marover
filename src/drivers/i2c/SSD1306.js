@@ -22,7 +22,7 @@ const PAGE_RANGE = 0x22;
 //scroll commands
 
 
-export function SSD1306(dev, w=128, h=64, flipped = false) {
+export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined) {
     return {
         typical: [0x3c, 0x3d],
         read: dev.byteReader,
@@ -50,16 +50,18 @@ export function SSD1306(dev, w=128, h=64, flipped = false) {
                 START_DISPLAY, 0x00,    // D3 00
                 ADDRESS, MODE_VERTICAL,     // 20 02
                 OSC_FREQ, 0xf0,         // D5 80
-                0xda, h>32 ? 0x10: 0x2,
+                0xda, (alternate !== undefined) ? alternate : (h>32 ? 0x10: 0x2), // DA 10 or 2 for alternate caps
                 CONTRAST, 0xa0,
                 flipped ? 0xC8 : 0xC0,
                 flipped ? 0xA1 : 0xA0,
                 0x8d, 0x14, ON      // magic numbers from datasheet
         ],
+        reinit: function () {
+                this.write(this.bufferData(this.initData));
+        },
         init: function () {
-            if(this.read()>10) // init only if not inited
-            this.write(this.bufferData(this.initData)); },
-
+            if(this.read()>10) this.reinit();// init only if not inited
+        },
         gotoPage: function(font, addr) {
            // console.log("addr" ,addr);
             this.write(this.bufferData([0,
@@ -97,7 +99,9 @@ export function SSD1306(dev, w=128, h=64, flipped = false) {
             return this.label(this.allocatedLabel++, font, caption);
 
         },
-
+        position: function(pos) {
+            this.write(this.bufferData([0, 0xD3, pos]));
+        },
 /**
  * prepares json bdf font to direct SSD1306 commands
  *

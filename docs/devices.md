@@ -10,6 +10,8 @@
 
 * AK8975
 * AK8963
+* HMC5883L 3-axis compas
+* QMC5883L 3-axis compas 0x0D, completely different one, incompatible
 
 # PWM
 

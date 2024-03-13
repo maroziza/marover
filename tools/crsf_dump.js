@@ -26,7 +26,7 @@ console.log(JSON.stringify(pro.stats()));
 const s = 32;
 
 var buf = new Uint8Array(128);
-if(false) while(true) {
+while(true) {
     var io2 = i2c.ioctl(fd, 0x541B);
     if(io2 < 1) {os.sleep(10); continue;}
     if(io2 > 128) io2 = 128;
