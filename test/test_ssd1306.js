@@ -1,5 +1,4 @@
-#!/home/giver/Focus/quickjs/qjs
-//home/giver/Source/esp32quickjs/qjs $0 $1 ; exit
+#!/usr/local/bin/qjs
 
 import I2Cbus from '../src/drivers/i2c.js';
 import {SSD1306} from '../src/drivers/i2c/SSD1306.js';

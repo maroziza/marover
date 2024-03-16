@@ -1,4 +1,4 @@
-//home/giver/Source/esp32quickjs/qjs $0 $1 ; exit
+#!/usr/local/bin/qjs
 import * as os from 'os';
 import * as std from 'std';
 import * as i2c from '../src/ioctl.so';
@@ -19,20 +19,7 @@ var rc  = [0,76,60,213,137,200,24,22,182,0,95,245,192,247,139,242,149,15,224,229
 43,95,249,202,7,0,0,76,124,226,215,200,24,22,236,43,159,49,192,247,139,242,149,239,23,229,
 43,95,249,202,7,0,0,76,124,226];
 
-function callback() {}
 var pro = new Proto();
 pro.update(rc);
 console.log(JSON.stringify(pro.stats()));
 const s = 32;
-
-var buf = new Uint8Array(128);
-if(false) while(true) {
-    var io2 = i2c.ioctl(fd, 0x541B);
-    if(io2 < 1) {os.sleep(10); continue;}
-    if(io2 > 128) io2 = 128;
-    var rd = os.read(fd, buf.buffer,0,io2);
-    pro.update(buf, io2);
- //   console.log(buf);
-}
-
-

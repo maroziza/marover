@@ -8,6 +8,7 @@ import {PCF8574} from "drivers/i2c/PCF8574.js";
 import {AS5600} from "drivers/i2c/AS5600.js";
 import PCA from "drivers/pwm/PCA9685.js";
 import {PCF8591} from "drivers/adc/PCF8591.js";
+import Compas from "drivers/compass/QMC5883L.js";
 
 // loading BUS drivers
 import I2Cbus from "drivers/i2c.js";

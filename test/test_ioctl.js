@@ -1,4 +1,4 @@
-#!/home/giver/Focus/quickjs/qjs
+#!/usr/local/bin/qjs
 import {ioctl} from "../src/ioctl.so";
 import * as os from "os";
 

@@ -1,4 +1,4 @@
-//home/giver/Source/esp32quickjs/qjs $0 $1 ; exit
+#!/usr/local/bin/qjs
 
 
 import {SBUS} from "../src/proto/sbus.js";

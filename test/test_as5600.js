@@ -1,5 +1,4 @@
-#!/home/giver/Focus/quickjs/qjs
-//home/giver/Source/esp32quickjs/qjs $0 $1 ; exit
+#!/usr/local/bin/qjs
 
 import I2Cbus from '../src/drivers/i2c.js';
 import {AS5600} from '../src/drivers/i2c/AS5600.js';

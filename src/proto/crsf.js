@@ -47,7 +47,7 @@ export default function CRFS(me=200) {
     var size = 0; // desired packet size
     var state = "self";
     var crc = 0;
-    var stat = {packetRcPacked:0,errorSkipped:0,errorSizeTypeMismatch:0};
+    var stat = {packetRcPacked:0,packetLq:0,errorSkipped:0,errorSizeTypeMismatch:0,errorCrc:0};
 
     return {
         channels: ()=>channels,
@@ -78,19 +78,14 @@ export default function CRFS(me=200) {
                     state = "self";
                 } else {
                     state = "type";
-
                 }
-                // todo we can check packet by size
             } else if(state === 0) {
-                // todo check src
                 if(crc !== buf[i]) {
-                    console.log("crc check",crc, buf[i]);
                     if(stat) stat.errorCrc++;
                 } else switch(frame[0]) {
                     case RC_CHANNELS_PACKED:
                         if(stat) stat.packetRcPacked++;
                         unpackChannels(frame, channels);
-                        console.log("RC", channels);
                         break;
                     case 20:
                         if(stat) stat.packetLq++;
@@ -102,7 +97,6 @@ export default function CRFS(me=200) {
                 state = "self";
             } else {
                 frame[-1+size-state] = buf[i];
-                // todo update crc?
                 state--;
             }
             crc = crc8tab[crc ^ buf[i]];

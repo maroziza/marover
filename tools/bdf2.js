@@ -1,5 +1,5 @@
-//home/giver/Source/esp32quickjs/qjs $0 $1 ; exit
-//home/giver/Focus/quickjs/qjs $0 $1 ; exit
+#!/usr/local/bin/qjs
+
 import * as std from "std";
 import * as os from "os";
 var fn = scriptArgs[1];
