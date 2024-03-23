@@ -1,12 +1,13 @@
-#!/home/giver/Focus/quickjs/qjs
+#!/usr/local/bin/qjs
 
-//home/giver/Source/esp32quickjs/qjs $0 $1 ; exit
 import * as os from 'os';
 // loading device drivers
-import {SSD1306} from "drivers/i2c/SSD1306.js";
+import {SSD1306} from "drivers/osd/SH1106.js";
 import {PCF8574} from "drivers/i2c/PCF8574.js";
 import {AS5600} from "drivers/i2c/AS5600.js";
 import PCA from "drivers/pwm/PCA9685.js";
+import ADC from "drivers/adc/ADS1115.js";
+
 import {PCF8591} from "drivers/adc/PCF8591.js";
 import Compas from "drivers/compass/QMC5883L.js";
 
@@ -28,21 +29,21 @@ import * as std from "std";
 // SSD1306.find(i2c) // try to find by default addresses
 
 var i2c = new I2Cbus()
-, screen = new SSD1306(i2c.device(0x3c), 128,32, true)
+, screen = new SSD1306(i2c.device(0x3c), 128,64, false,false)
 //, relays = new PCF8574(i2c.device(0x20))
 //, angle = new AS5600(i2c.device(0x36))
 //, pwm = new PCA9685(i2c.device(0x40))
 ;
 
-screen.init();
+screen.reinit();
 //pwm.init(500);
 console.log("Device init done");
 
 
 // UI
-var regular = screen.prepareFont(Helvetica, 1, 0, 2);
+var small = screen.prepareFont(Helvetica, 1, 0, 2);
 var icons8 = screen.prepareFont(Icons, 1, 0, -2, 1);
-Object.assign(regular, regular, icons8);
+Object.assign(small, small, icons8);
 var bold = screen.prepareFont(Bold,1,0,-3);
 var roman = screen.prepareFont(Schoolbook, 3 ,0x800000, 6,0);
 var icons16 = screen.prepareFont(Icons, 3, 0x8001, -6,-2);
@@ -65,18 +66,19 @@ Object.assign(roman, icons16, roman);
 
 var i2c = new I2Cbus(13);
 var dev = i2c.device(0x40);
-var pca = new PCA(dev);
+var pwm = new PCA(dev);
+var adc = new ADC(i2c.device(0x48));
 console.log("ok");
-pca.init(100);
+pwm.init(100);
 const start = Date.now();
 var t = 0;
 while (true) {
 //for(var i = 3150; i  < 3860; i+=1) {
-const ca = pca.channel(15);
-const cb = pca.channel(0);
+const ca = pwm.channel(15);
+const cb = pwm.channel(0);
 const i = Math.round((1+Math.sin(t/100))*((3860-3150)/2)+3150);
-    screen.gotoPage(roman, 0);
-    screen.drawLetters(roman, i.toString().padStart(8,"0"));
+    screen.gotoPage(small, i>>>3);
+    screen.drawLetters(small, i.toString().padStart(8,"0")+" The E70 community");
     ca(i);
     cb((1+Math.sin(t/50))*2048);
 

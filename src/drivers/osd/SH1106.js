@@ -20,7 +20,7 @@ const VOLTAGE_SELECT = 0xDB;
 const COLUMN_RANGE = 0x21;
 const PAGE_RANGE = 0x22;
 //scroll commands
-
+const DATA = 0x40;
 
 export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined) {
     return {
@@ -47,13 +47,14 @@ export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined
         initData: [0,
                 OFF, LINE_START,        // AF, 40
                 MUX_RATIO, h-1,         // A8 3F (for h=64)
-                START_DISPLAY, 0x00,    // D3 00
-                ADDRESS, MODE_VERTICAL,     // 20 02
+         //       START_DISPLAY, 0x00,    // D3 00
+         //      ADDRESS, MODE_VERTICAL,     // 20 02
                 OSC_FREQ, 0xf0,         // D5 80
-                0xda, (alternate !== undefined) ? alternate : (h>32 ? 0x10: 0x2), // DA 10 or 2 for alternate caps
+                0xda, (alternate === undefined) ?  (h>32 ? 0x12: 0x2) :
+                (alternate?0x2 : 0x12), // DA 10 or 2 for alternate caps
                 CONTRAST, 0xa0,
                 flipped ? 0xC8 : 0xC0,
-                flipped ? 0xA1 : 0xA0,
+                flipped ? 0xA1 : 0xA0, 0xE0,
                 0x8d, 0x14, ON      // magic numbers from datasheet
         ],
         reinit: function () {
@@ -64,15 +65,14 @@ export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined
         },
         gotoPage: function(font, addr) {
            // console.log("addr" ,addr);
-            this.write(this.bufferData([0,
-            ADDRESS, font.lines == 1 ? MODE_HORIZONTAL : MODE_VERTICAL,
-            PAGE_RANGE,addr, font.lines == 1 ? 7 : addr+font.lines-1,
-            COLUMN_RANGE, 0, 0x7F]));
+            this.write(this.bufferData([0,0xEE,
+            0xB0 | (addr & 0xF), 0x01, 0x10, 0xE0,
+            //ADDRESS, font.lines == 1 ? MODE_HORIZONTAL : MODE_VERTICAL,
+            //PAGE_RANGE,addr, font.lines == 1 ? 7 : addr+font.lines-1,
+            //COLUMN_RANGE, 0, 0x7F]
+            ]));
         },
-        showFont(font) {
-            for(var a in font)
-                this.write(font[a]);
-        },
+
         drawLetters(font, text) {
     //       if(! text instanceof String) return;
             for(var i =0; i<text.length;i++) {
@@ -100,7 +100,7 @@ export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined
 
         },
         position: function(pos) {
-            this.write(this.bufferData([0, 0xD3, pos]));
+            this.write(this.bufferData([0, 0xA6, MUX_RATIO,48-(Math.abs(pos)>>3) &0x3F, 0x40| (pos& 0x3F)]));
         },
 /**
  * prepares json bdf font to direct SSD1306 commands
@@ -130,7 +130,7 @@ export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined
 
                 ).join('')).reverse();
 
-                var bytes = [0x40];
+                var bytes = [0x42];
                 if((c.bbx[2]+spacing)>0)
                     for(var xpad = spacing + c.bbx[2]; xpad > 0; xpad--)
                        for(var y = 0; y < lines; y++)
@@ -162,7 +162,7 @@ export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined
                 out[k] = this.bufferData(bytes);
             };
             // fix space to 3 pixels, how to adjust, use some props??
-            var space = [0x40];
+            var space = [DATA];
             for(var xpad = spacing + fbbx[0]/4; xpad > 0; xpad--)
                 for(var y = 0; y < lines; y++)
                     space.push(0xFF&(mask>>>(8*y)));
