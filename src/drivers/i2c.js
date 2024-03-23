@@ -57,7 +57,11 @@ export default function LinuxI2Cbus(num="13") {
                 blockReader: function(cmd, block) {
                     return i2c.i2c_read_block(file, addr, cmd, block);
                 },
-                wordRegReader: function(cmd) { return null;} ,
+                wordRegReader: function(cmd) {
+                    const buf = new Uint8Array(2);
+                    this.blockReader(cmd, buf.buffer);
+                    return buf[0]<<8 | buf[1];
+                },
                 byteRegReader: function(cmd) {
                     const buf = new Uint8Array(1);
                     this.blockReader(cmd, buf.buffer);

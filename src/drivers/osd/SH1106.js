@@ -99,8 +99,11 @@ export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined
             return this.label(this.allocatedLabel++, font, caption);
 
         },
+        height: function(max) {
+            this.write(this.bufferData([0,  MUX_RATIO, (max-1)&0xFF]));
+        },
         position: function(pos) {
-            this.write(this.bufferData([0, 0xA6, MUX_RATIO,48-(Math.abs(pos)>>3) &0x3F, 0x40| (pos& 0x3F)]));
+            this.write(this.bufferData([0,  , 0x40| (pos& 0x3F)]));
         },
 /**
  * prepares json bdf font to direct SSD1306 commands

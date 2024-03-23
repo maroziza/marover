@@ -72,11 +72,27 @@ console.log("ok");
 pwm.init(100);
 const start = Date.now();
 var t = 0;
+function form(i) { return i.toString().padStart(8,"0"); }
+screen.height(48);
+
 while (true) {
+    for(var i = 0; i < 8; i++) {
+        screen.gotoPage(small, i);
+        screen.drawLetters(small, form(adc.channel(i)()
+
+        ));
+//          os.sleep();
+var c = adc.channel(3)()>>>6
+screen.position(c);
+screen.height(adc.channel(2)()>>>8);
+
+    }
+}
+{
 //for(var i = 3150; i  < 3860; i+=1) {
-const ca = pwm.channel(15);
-const cb = pwm.channel(0);
-const i = Math.round((1+Math.sin(t/100))*((3860-3150)/2)+3150);
+    const ca = pwm.channel(15);
+    const cb = pwm.channel(0);
+    const i = Math.round((1+Math.sin(t/100))*((3860-3150)/2)+3150);
     screen.gotoPage(small, i>>>3);
     screen.drawLetters(small, i.toString().padStart(8,"0")+" The E70 community");
     ca(i);
