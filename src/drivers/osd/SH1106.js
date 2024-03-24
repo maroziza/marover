@@ -23,6 +23,11 @@ const PAGE_RANGE = 0x22;
 const DATA = 0x40;
 
 export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined) {
+    var spaceArr = new Uint8Array(Array(26));
+    spaceArr[0] =  dev.writeToAddress();
+    spaceArr[1] = DATA;
+    const space = spaceArr.buffer;
+
     return {
         typical: [0x3c, 0x3d],
         read: dev.byteReader,
@@ -74,12 +79,23 @@ export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined
         },
 
         drawLetters(font, text) {
-    //       if(! text instanceof String) return;
+            if(( text=== undefined) || !text.charAt )  return;
+            var budget = w+2;
             for(var i =0; i<text.length;i++) {
                 const c = font[text.codePointAt(i)];
-                if(!c) { console.log("Char not found", text.charAt(i) ); continue;}
-                this.write(c);
+
+                if(!c) {
+                //    console.log("Char not found", text.charAt(i) );
+                    continue;
+                }
+                dev.blockPartWriter(c, c.byteLength-1);
+                budget -= c.byteLength-2;
+                if(budget<=0) return;
+
             }
+            if(budget>25) budget = 25;
+      //      console.log("budget", budget);
+            dev.blockPartWriter(space, budget);
         },
 
 
@@ -100,6 +116,7 @@ export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined
 
         },
         height: function(max) {
+            if(max > h) max = h;
             this.write(this.bufferData([0,  MUX_RATIO, (max-1)&0xFF]));
         },
         position: function(pos) {
@@ -158,7 +175,7 @@ export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined
 
 
 
-            var out = {};
+            var out = Array(65535);
             for(var k in font.chars) {
                 var c = font.chars[k];
                 var bytes = prepareChar(c, );

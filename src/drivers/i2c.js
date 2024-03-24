@@ -28,6 +28,9 @@ export default function LinuxI2Cbus(num="13") {
                     const buf = Uint8Array.from([byte]).buffer;
                     os.write(file, buf,0,1);
                 },
+                blockPartWriter: function(block, size) {
+                    os.write(file, block, 1, size);
+                },
                 blockWriter: function(block) {
                     // for linux we should specify address at ioctl, so ommiting here
                     if(block instanceof ArrayBuffer) {
