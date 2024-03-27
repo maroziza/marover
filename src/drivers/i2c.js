@@ -6,7 +6,15 @@ import * as i2c from "../ioctl.so";
  * TODO enumerate linux i2c buses and use last one
  *
  */
-export default function LinuxI2Cbus(num="13") {
+export default function LinuxI2Cbus(bus=undefined) {
+    if(bus === undefined)
+       bus = os.readdir("/dev/")[0]
+         .filter((x)=>x.startsWith("i2c-"))
+         .map(x=>Number.parseInt(x.substring(4)))
+         .sort((a,b)=>a<b?1:-1)
+         [0];
+// todo check for permission
+
     return {
         find: function(driver) {
             for(a in driver.typical) {
@@ -14,9 +22,9 @@ export default function LinuxI2Cbus(num="13") {
                 }
             },
          device: function(addr) {
-            var file =  os.open("/dev/i2c-13", os.O_RDWR);
+            var file =  os.open("/dev/i2c-"+bus, os.O_RDWR);
             var c = i2c.ioctl(file , 0x0703, addr);
-            console.log("i2c open", file, "<=", addr.toString(16),'==', addr.toString(16));
+            console.log("i2c open bus:",bus,"=", file, "<=", addr.toString(16),'==', addr.toString(16));
 
             return {
                 file,

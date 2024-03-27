@@ -150,7 +150,7 @@ export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined
 
                 ).join('')).reverse();
 
-                var bytes = [0x42];
+                var bytes = [DATA];
                 if((c.bbx[2]+spacing)>0)
                     for(var xpad = spacing + c.bbx[2]; xpad > 0; xpad--)
                        for(var y = 0; y < lines; y++)

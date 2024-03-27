@@ -2,14 +2,9 @@
 
 import * as os from 'os';
 // loading device drivers
-import {SSD1306} from "drivers/osd/SH1106.js";
-import {PCF8574} from "drivers/i2c/PCF8574.js";
-import {AS5600} from "drivers/i2c/AS5600.js";
-import PCA from "drivers/pwm/PCA9685.js";
-import ADC from "drivers/adc/ADS1115.js";
 
-import {PCF8591} from "drivers/adc/PCF8591.js";
-import Compas from "drivers/compass/QMC5883L.js";
+//import {PCF8591} from "drivers/adc/PCF8591.js";
+//import Compas from "drivers/compass/QMC5883L.js";
 
 // loading BUS drivers
 import I2Cbus from "drivers/i2c.js";
@@ -26,18 +21,18 @@ import Icons from 'fonts/SijiMR10.json'
 import Scroll from "control/osd/ScrollPane.js";
 import {RelayDrive} from "control/drive/relay.js";
 import * as std from "std";
-
+import Marover from 'frame/marover.js';
 // SSD1306.find(i2c) // try to find by default addresses
 
 var i2c = new I2Cbus()
-, screen = new SSD1306(i2c.device(0x3c), 128,64, false,false)
 //, relays = new PCF8574(i2c.device(0x20))
 //, angle = new AS5600(i2c.device(0x36))
 //, pwm = new PCA9685(i2c.device(0x40))
 ;
+var frame = Marover(i2c, undefined);
 
-screen.reinit();
-//pwm.init(500);
+var pwm = frame.devices.pwm;
+var screen = frame.devices.osd;
 console.log("Device init done");
 
 
@@ -65,12 +60,6 @@ Object.assign(roman, icons16, roman);
 
 // hobby servo sg90 = 3150 - 3860
 
-var i2c = new I2Cbus(13);
-var dev = i2c.device(0x40);
-var pwm = new PCA(dev);
-var adc = new ADC(i2c.device(0x48));
-console.log("ok");
-pwm.init(100);
 const start = Date.now();
 var t = 0;
 function form(i) { return i.toString().padStart(8,"0"); }
@@ -86,29 +75,36 @@ var k = 0;
 while(k<str.length)strs.push(str.substring(k,k+=25));
 
 while (true) {
-var c = adc.channel(3)()/57;
+var c = frame.inputs.throttle()/57;
 if(c>32000)c=0;
-if(c<100) {
     scroll.position(0);
+if(c<2) {
     screen.height(64);
 } else {
-    scroll.position(2000-c-100);
+   // scroll.position(c-2);
     screen.height(56);
+    frame.outputs.steer(frame.inputs.steer() >>> 2);
+    frame.outputs.throttle(frame.inputs.throttle() >>> 4);
+
 }
 //screen.height(adc.channel(2)()>>>8);
 
-   for(var i = scroll.from(); i < scroll.to(); i++) {
+var inputs = Object.values(frame.inputs);
+   for(var i = 0; i < inputs.length; i++) {
 //for (var i = 0; i < 8;i++) {
         scroll.gotoPage(small, i);
-        scroll.drawLetters(small, strs[i]);
+        scroll.drawLetters(small, inputs[i]()+"");
 //          os.sleep();
 
     }
-        if(t++%100==0) console.log((Date.now()-start)/t," ms");
+        if(t++%200==0) {
+            console.log((Date.now()-start)/t," ms");
 
+        }
 }
-{
-//for(var i = 3150; i  < 3860; i+=1) {
+//{
+while(false)
+for(var i = 3150; i  < 3860; i+=1) {
     const ca = pwm.channel(15);
     const cb = pwm.channel(0);
     const i = Math.round((1+Math.sin(t/100))*((3860-3150)/2)+3150);
@@ -119,7 +115,7 @@ if(c<100) {
 
   //  os.sleep(100);
 
-    if(t++%1000==0) console.log((Date.now()-start)/t," ms");
+    if(t++%1000==0) console.log(i, (Date.now()-start)/t," ms");
 
 }
 
