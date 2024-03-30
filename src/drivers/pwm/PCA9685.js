@@ -18,12 +18,11 @@ export default function PCA9685(dev) {
     mode1 = (mode1 | MODE1_AI);
     dev.byteRegWriter(reg_Mode1, mode1);
 
-
     const write = dev.blockWriter;
     return {
         addresses: [0x40],
         init: function(freq) {
-             const prescale_value = Math.round(oscillatorFrequency / (4096. * freq)) - 1.;
+            const prescale_value = Math.round(oscillatorFrequency / (4096. * freq)) - 1.;
             if (prescale_value < 0x03 || prescale_value > 0xff)
                 throw  {error:"Requested PWM frequency out of range"};
 
@@ -42,23 +41,23 @@ export default function PCA9685(dev) {
 
             dev.byteRegWriter(reg_Mode2, 1| (1<<4)| (1<<5) | dev.byteRegReader(reg_Mode2));
             console.log(bits(MODE2, dev.byteRegReader(reg_Mode2)));
-
-        },
-        // todo init MODE1
-        channel: function(n) {
-            const array = new Uint8Array([dev.writeToAddress(), n*4+reg_Leds, 0,0]);
+            // init all the data to known state
+            const array = new Uint8Array([dev.writeToAddress(), 0, 0,0,0,0]);
             const buf = array.buffer;
-            write(buf);
-            array[1]+=2;
+            for(var n = 0; n < 16; n++) {
+                array[1] = n*4+reg_Leds;
+                write(buf);
+            }
+        },
 
+        channel: function(n) {
+            const array = new Uint8Array([dev.writeToAddress(), 2+n*4+reg_Leds, 0,0]);
+            const buf = array.buffer;
 
             return function(value) {
                 array[2] = (value)&0xFF;
                 array[3] = (value>>>8)&0xF;
                 write(buf);
-//                var b = new Uint8Array(4);
-  //              dev.blockRegReader(reg_Leds+n*4, b.buffer);
-    //            console.log(b);
             }
         }
 };}

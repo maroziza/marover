@@ -2,11 +2,9 @@ import * as os from "os";
 import * as i2c from "../ioctl.so";
 /**
  * Linux kernel i2c driver using /dev/i2c device and ioctl.so lib
- *
- * TODO enumerate linux i2c buses and use last one
- *
+ * *
  */
-export default function LinuxI2Cbus(bus=undefined) {
+export default function LinuxI2Cbus(bus = undefined) {
     if(bus === undefined)
        bus = os.readdir("/dev/")[0]
          .filter((x)=>x.startsWith("i2c-"))

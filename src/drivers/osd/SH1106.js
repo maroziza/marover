@@ -22,7 +22,7 @@ const PAGE_RANGE = 0x22;
 //scroll commands
 const DATA = 0x40;
 
-export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined) {
+export default function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined) {
     var spaceArr = new Uint8Array(Array(26));
     spaceArr[0] =  dev.writeToAddress();
     spaceArr[1] = DATA;
@@ -49,7 +49,7 @@ export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined
 
             return out;
         },
-        initData: [0,
+        initData: function() { return [0,
                 OFF, LINE_START,        // AF, 40
                 MUX_RATIO, h-1,         // A8 3F (for h=64)
          //       START_DISPLAY, 0x00,    // D3 00
@@ -61,12 +61,17 @@ export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined
                 flipped ? 0xC8 : 0xC0,
                 flipped ? 0xA1 : 0xA0, 0xE0,
                 0x8d, 0x14, ON      // magic numbers from datasheet
-        ],
+        ]},
         reinit: function () {
-                this.write(this.bufferData(this.initData));
+                this.write(this.bufferData(this.initData()));
         },
-        init: function () {
-            if(this.read()>10) this.reinit();// init only if not inited
+        init: function (nw,nh,nflipped,nalternate) {
+            var reinit = this.read()>10;
+            if(nw !== undefined) if(nw !== w) { w = nw; reinit = true; }
+            if(nh !== undefined) if(nh !== h) { h = nh; reinit = true; }
+            if(nflipped !== undefined) if(nflipped !== flipped) { flipped = nflipped; reinit = true; }
+            if(nalternate !== undefined) if(nalternate !== alternate) { alternate = nalternate; reinit = true; }
+            if(reinit) this.reinit();// init only if not inited
         },
         gotoPage: function(font, addr) {
            // console.log("addr" ,addr);
@@ -85,7 +90,8 @@ export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined
                 const c = font[text.codePointAt(i)];
 
                 if(!c) {
-                //    console.log("Char not found", text.charAt(i) );
+                    console.log("Char not found", text.charAt(i),text.codePointAt(i));
+                    font[text.codePointAt(i)] = new ArrayBuffer(1);
                     continue;
                 }
                 dev.blockPartWriter(c, c.byteLength-1);
@@ -93,28 +99,16 @@ export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined
                 if(budget<=0) return;
 
             }
-            if(budget>25) budget = 25;
-      //      console.log("budget", budget);
+            while(budget>25) {
+                budget -= 25;
+                dev.blockPartWriter(space, 25);
+            }
             dev.blockPartWriter(space, budget);
         },
 
 
 
-        label(position, font, lab) {
-            var self = this;
-            return function(text) {
-                self.gotoPage(font, position);
-                self.drawLetters(font, lab); // this only once needed
-                // todo we can optimise this by just updating value
-                self.drawLetters(font, text);
-            }
-        },
 
-        allocatedLabel: 0,
-        nextLabel: function(font, caption)  {
-            return this.label(this.allocatedLabel++, font, caption);
-
-        },
         height: function(max) {
             if(max > h) max = h;
             this.write(this.bufferData([0,  MUX_RATIO, (max-1)&0xFF]));
@@ -139,7 +133,6 @@ export function SSD1306(dev, w=128, h=64, flipped = false, alternate = undefined
                     .split(" ")
                     .map((x)=>Number.parseInt(x,10));
             var bl = baseline+fbbx[1]-Number.parseInt(font.head.FONT_DESCENT,10);
-            console.log(bl);
 
             function prepareChar(c) {
                 var bmp = c.bitmap.split(" ").map(

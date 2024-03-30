@@ -1,4 +1,4 @@
-import {SSD1306} from "drivers/osd/SH1106.js";
+import OSD from "drivers/osd/SH1106.js";
 import {PCF8574} from "drivers/i2c/PCF8574.js";
 import {AS5600} from "drivers/i2c/AS5600.js";
 import PWM from "drivers/pwm/PCA9685.js";
@@ -10,10 +10,8 @@ export default function(i2c, rc) {
         gpio: new PCF8574(i2c.device(0x20)),
         pwm: new PWM(i2c.device(0x40)),
         adc: new ADC(i2c.device(0x48)),
-        osd: new SSD1306(i2c.device(0x3c), 128,64, false,false)
+        osd: new OSD(i2c.device(0x3c))
     };
-    devices.pwm.init(120);
-    devices.osd.init();
 
 
 
@@ -28,6 +26,11 @@ export default function(i2c, rc) {
     outputs = {
         throttle: devices.pwm.channel(0),
         steer: devices.pwm.channel(15),
-    };
-    return {devices, inputs, outputs};
+        reverse: devices.gpio.nextBlock(3)
+    },
+    init = function() {
+        devices.pwm.init(120);
+        devices.osd.init(128, 64, false, false);
+    }
+    return {devices, inputs, outputs, init};
 }
