@@ -19,7 +19,7 @@ void stats(String msg)
 {
   uint32_t heap = ESP.getFreeHeap() * 100 / ESP.getHeapSize();
   u_int32_t minHeap = ESP.getMinFreeHeap() * 100 / ESP.getHeapSize();
-  uint32_t psRam = ESP.getFreePsram() * 100 / ESP.getPsramSize();
+  uint32_t psRam = (1+ESP.getFreePsram()) * 100 / (1+ESP.getPsramSize());
   uint16_t maxHeap = ESP.getMaxAllocHeap() * 100 / ESP.getHeapSize();
   Serial.print(msg);
   Serial.printf(" -> Stats%: free heap: %u - min free heap: %u - max free heap block: %u - free psram: %u\r\n", heap, minHeap, maxHeap, psRam);
@@ -105,7 +105,7 @@ void setup()
     stats("Init Legacy stream server");
 #endif
 
-    initFileAsyncEndpoints(server);
+//    initFileAsyncEndpoints(server);
     stats("Init Fileserver endpoints");
 
     initWebHTML(server);

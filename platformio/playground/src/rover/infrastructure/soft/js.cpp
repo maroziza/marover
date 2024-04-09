@@ -1,3 +1,4 @@
+#if CONFIG_MAROVER_QUICK_JS
 #include "esp32/QuickJS.h"
 #include "modules.h"
 
@@ -15,3 +16,4 @@ void startJS(){
 void loopJS(){
     qjs.loop();
 }
+#endif

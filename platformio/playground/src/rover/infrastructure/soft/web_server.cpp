@@ -2,6 +2,7 @@
 #include "ESPAsyncWebServer.h"
 #include "FS.h"
 #include <LittleFS.h>
+#include <AsyncWebdav.h>
 
 #include "config.h"
 
@@ -36,7 +37,8 @@ AsyncWebServer * web_server_init() {
   server = new AsyncWebServer(CONFIG_MAROVER_WEB_PORT);
   return server;
 }
-
+String url = "/dav";
+AsyncWebdav dav(url, LittleFS);
 
 void web_server_start(){
     Serial.println("Starting Webserver ...");
@@ -45,4 +47,6 @@ void web_server_start(){
     Serial.print(WiFiAddr);
     Serial.printf(":%d/", CONFIG_MAROVER_WEB_PORT);
     Serial.println();
+
+    server->addHandler(&dav);
 }
