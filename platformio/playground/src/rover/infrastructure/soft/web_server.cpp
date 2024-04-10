@@ -42,11 +42,11 @@ AsyncWebdav dav(url, LittleFS);
 
 void web_server_start(){
     Serial.println("Starting Webserver ...");
+    server->addHandler(&dav);
     server->begin();
     Serial.print("Web http://");
     Serial.print(WiFiAddr);
     Serial.printf(":%d/", CONFIG_MAROVER_WEB_PORT);
     Serial.println();
 
-    server->addHandler(&dav);
 }

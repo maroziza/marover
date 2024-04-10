@@ -98,20 +98,20 @@ void setup()
     stats("Init Webserver");
 
 #if CONFIG_MAROVER_WEB_STREAMING_ASYNC
-    initCameraStream(server);
+   // initCameraStream(server);
     stats("Init Async Camera stream");
 #else
-    startLegacyStreamServer();
+   // startLegacyStreamServer();
     stats("Init Legacy stream server");
 #endif
 
 //    initFileAsyncEndpoints(server);
     stats("Init Fileserver endpoints");
 
-    initWebHTML(server);
+ //   initWebHTML(server);
     stats("Init static web resources");
 
-    initWebSocketControlsV1(server);
+ //   initWebSocketControlsV1(server);
     stats("Init Web Sockets V1 (async)");
 
     web_server_start();
