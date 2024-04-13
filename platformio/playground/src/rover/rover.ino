@@ -7,6 +7,7 @@
 #include "soc/rtc_wdt.h"
 #include <Preferences.h>
 #include "crsf.h"
+#include "esp32js.h"
 #include "duk_config.h"
 #include "duktape.h"
 #include <ESPmDNS.h>
@@ -117,6 +118,7 @@ void setup()
   stats("FS");
 
 #if CONFIG_MAROVER_QUICK_JS
+  esp32_javascript_init();
   startJS();
   fileChanged("");
   stats("JS");
