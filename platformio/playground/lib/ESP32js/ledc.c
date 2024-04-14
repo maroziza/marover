@@ -76,6 +76,23 @@ static duk_ret_t el_ledcWrite(duk_context *ctx)
 
 
 void ledc_module_init(duk_context *ctx) {
+	#ifdef KEY_BUILTIN
+    duk_push_int(esp32JS, KEY_BUILTIN);
+#else
+    duk_push_undefined(esp32JS);
+#endif
+    duk_put_global_string(esp32JS, "KEY_BUILTIN");
+
+#ifdef LED_BUILTIN
+    duk_push_int(esp32JS, LED_BUILTIN);
+#else
+    duk_push_undefined(esp32JS);
+#endif
+    duk_put_global_string(esp32JS, "LED_BUILTIN");
+
+
+	
+	
 	duk_push_c_function(ctx, el_pinMode, 2 /*nargs*/);
     duk_put_global_string(ctx, "pinMode");
 

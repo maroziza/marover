@@ -45,7 +45,7 @@ void createConsole(duk_context *ctx);
         void *fd;
     } js_event_t;
 
-#define MAX_EVENTS 8
+#define MAX_EVENTS 28
     typedef struct
     {
         js_event_t events[MAX_EVENTS];

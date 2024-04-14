@@ -27,84 +27,6 @@ duk_context *esp32JS = NULL;
 // only for debug purposes
 bool DISABLE_EVENTS = false;
 
-void fileLog(duk_context *esp32JS, log_level_t level, char *message)
-{
-    if (level >= INFO)
-    {
-        // append to logfile
-        duk_eval_string(esp32JS, "typeof el_appendLogBuffer");
-        if (strcmp(duk_get_string(esp32JS, -1), "function") == 0)
-        {
-            duk_push_string(esp32JS, "el_appendLogBuffer");
-            duk_eval(esp32JS);
-            duk_push_string(esp32JS, message);
-            duk_push_uint(esp32JS, level);
-            duk_call(esp32JS, 2);
-        }
-    }
-}
-
-void jslog(log_level_t level, const char *msg, ...)
-{
-    if (level < (5 - LOG_LOCAL_LEVEL))
-    {
-        return;
-    }
-
-    char *my_string;
-    va_list argp;
-
-    va_start(argp, msg);
-    vasprintf(&my_string, msg, argp);
-    va_end(argp);
-
-    TaskHandle_t current = xTaskGetCurrentTaskHandle();
-
-    if (esp32JS && current == task) // prevent race conditions with esp32JS from different tasks
-    {
-        if (level == DEBUG)
-        {
-            duk_push_string(esp32JS, "console.debug");
-        }
-        else if (level == INFO)
-        {
-            duk_push_string(esp32JS, "console.info");
-        }
-        else if (level == WARN)
-        {
-            duk_push_string(esp32JS, "console.warn");
-        }
-        else
-        {
-            duk_push_string(esp32JS, "console.error");
-        }
-        duk_eval(esp32JS); /* -> [ ... func ] */
-        duk_push_string(esp32JS, my_string);
-        duk_call(esp32JS, 1);
-        //clear stack
-        duk_pop(esp32JS);
-    }
-    else
-    {
-        char *message = spiram_malloc(strlen(my_string) + 1); // gets freed in el_readAndFreeString
-        if (message == NULL)
-        {
-            ESP_LOGE(tag, "No memory to log message. Aborting...");
-            abort();
-        }
-
-        strcpy(message, my_string);
-
-        js_event_t event;
-        js_eventlist_t events;
-        events.events_len = 0;
-
-        el_create_event(&event, EL_LOG_EVENT_TYPE, level, message);
-        el_add_event(&events, &event);
-        el_fire_events(&events);
-    }
-    free(my_string);
-}
 
 void IRAM_ATTR el_add_event(js_eventlist_t *events, js_event_t *event)
 {
@@ -330,22 +252,7 @@ void duktape_task(void *ignore)
 
 
     jslog(INFO, "Free memory: %d bytes", esp_get_free_heap_size());
-
    
-#ifdef KEY_BUILTIN
-    duk_push_int(esp32JS, KEY_BUILTIN);
-#else
-    duk_push_undefined(esp32JS);
-#endif
-    duk_put_global_string(esp32JS, "KEY_BUILTIN");
-
-#ifdef LED_BUILTIN
-    duk_push_int(esp32JS, LED_BUILTIN);
-#else
-    duk_push_undefined(esp32JS);
-#endif
-    duk_put_global_string(esp32JS, "LED_BUILTIN");
-
 
     duk_push_c_function(esp32JS, info, 0 /*nargs*/);
     duk_put_global_string(esp32JS, "info");
@@ -410,4 +317,91 @@ void esp32_javascript_init() {
     jslog(INFO, "Free memory: %d bytes", esp_get_free_heap_size());
 
     xTaskCreatePinnedToCore(&duktape_task, "duktape_task", 24 * 1024, NULL, 5, &task, 0);
+}
+
+
+
+
+
+
+/////////////// shitty loggging 
+
+
+void fileLog(duk_context *esp32JS, log_level_t level, char *message)
+{
+    if (level >= INFO)
+    {
+        // append to logfile
+        duk_eval_string(esp32JS, "typeof el_appendLogBuffer");
+        if (strcmp(duk_get_string(esp32JS, -1), "function") == 0)
+        {
+            duk_push_string(esp32JS, "el_appendLogBuffer");
+            duk_eval(esp32JS);
+            duk_push_string(esp32JS, message);
+            duk_push_uint(esp32JS, level);
+            duk_call(esp32JS, 2);
+        }
+    }
+}
+
+void jslog(log_level_t level, const char *msg, ...)
+{
+    if (level < (5 - LOG_LOCAL_LEVEL))
+    {
+        return;
+    }
+
+    char *my_string;
+    va_list argp;
+
+    va_start(argp, msg);
+    vasprintf(&my_string, msg, argp);
+    va_end(argp);
+
+    TaskHandle_t current = xTaskGetCurrentTaskHandle();
+
+    if (esp32JS && current == task) // prevent race conditions with esp32JS from different tasks
+    {
+        if (level == DEBUG)
+        {
+            duk_push_string(esp32JS, "console.debug");
+        }
+        else if (level == INFO)
+        {
+            duk_push_string(esp32JS, "console.info");
+        }
+        else if (level == WARN)
+        {
+            duk_push_string(esp32JS, "console.warn");
+        }
+        else
+        {
+            duk_push_string(esp32JS, "console.error");
+        }
+        duk_eval(esp32JS); /* -> [ ... func ] */
+        duk_push_string(esp32JS, my_string);
+        duk_call(esp32JS, 1);
+        //clear stack
+        duk_pop(esp32JS);
+    }
+    else
+    {
+        char *message = spiram_malloc(strlen(my_string) + 1); // gets freed in el_readAndFreeString
+        if (message == NULL)
+        {
+            ESP_LOGE(tag, "No memory to log message. Aborting...");
+            abort();
+        }
+
+        strcpy(message, my_string);
+
+        js_event_t event;
+        js_eventlist_t events;
+        events.events_len = 0;
+
+        el_create_event(&event, EL_LOG_EVENT_TYPE, level, message);
+        el_add_event(&events, &event);
+        el_fire_events(&events);
+    }
+    free(my_string);
 }
