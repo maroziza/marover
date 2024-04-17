@@ -6,6 +6,7 @@
 #include "duktape.h"
 
 
+
 static duk_ret_t el_pinMode(duk_context *ctx)
 {
     int pin = duk_to_int(ctx, 0);
@@ -79,16 +80,16 @@ void ledc_module_init(duk_context *ctx) {
 	#ifdef KEY_BUILTIN
     duk_push_int(esp32JS, KEY_BUILTIN);
 #else
-    duk_push_undefined(esp32JS);
+    duk_push_undefined(ctx);
 #endif
-    duk_put_global_string(esp32JS, "KEY_BUILTIN");
+    duk_put_global_string(ctx, "KEY_BUILTIN");
 
 #ifdef LED_BUILTIN
     duk_push_int(esp32JS, LED_BUILTIN);
 #else
-    duk_push_undefined(esp32JS);
+    duk_push_undefined(ctx);
 #endif
-    duk_put_global_string(esp32JS, "LED_BUILTIN");
+    duk_put_global_string(ctx, "LED_BUILTIN");
 
 
 	
