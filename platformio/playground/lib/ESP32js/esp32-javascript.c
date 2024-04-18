@@ -237,6 +237,34 @@ void loadJS(duk_context *esp32JS, const char *name, char *start, char *end)
 }
 
 
+void js_eval (char *code)
+{
+ // Serial.printf("\n>>> Eval Code: %s\n", code);
+  duk_push_string(esp32JS, code);
+  duk_int_t rc = duk_peval(esp32JS);
+
+  if (rc != 0) {
+    duk_safe_to_stacktrace(esp32JS, -1);
+  } else {
+    duk_safe_to_string(esp32JS, -1);
+  }
+
+  //String res = 
+  duk_get_string(esp32JS, -1);
+
+ // Serial.printf("\n>>> Reslt: %s\n", res ? res : "null");
+
+  duk_pop(esp32JS);
+//  duk_destroy_heap(esp32JS);
+}
+
+
+void fileChanged(const char* name) {
+	js_eval("console.log('Hello, world!');");
+}  
+
+
+
 duk_ret_t el_readAndFreeString(duk_context *esp32JS)
 {
     char *str = duk_to_int(esp32JS, 0);
@@ -245,13 +273,12 @@ duk_ret_t el_readAndFreeString(duk_context *esp32JS)
     return 1;
 }
 
-void duktape_task(void *ignore)
-{
+void duktape_task(void *ignore) {
 	esp32JS = jsCreateContext();
+
     createConsole(esp32JS);
 
-
-    jslog(INFO, "Free memory: %d bytes", esp_get_free_heap_size());
+    jslog(INFO, "LOWER Free memory: %d bytes", esp_get_free_heap_size());
    
 
     duk_push_c_function(esp32JS, info, 0 /*nargs*/);
@@ -287,36 +314,34 @@ void duktape_task(void *ignore)
     duk_push_c_function(esp32JS, el_readAndFreeString, 1 /*nargs*/);
     duk_put_global_string(esp32JS, "el_readAndFreeString");
 
-//    loadUrlPolyfill(esp32JS);
 
-#define ESP32_JAVASCRIPT_EXTERN ESP32_JAVASCRIPT_EXTERN_REGISTER
-//#include "esp32-javascript-config.h"
-#undef ESP32_JAVASCRIPT_EXTERN
-
-    duk_eval_string_noresult(esp32JS, "require('esp32-javascript')");
-
-#define ESP32_JAVASCRIPT_EXTERN ESP32_JAVASCRIPT_EXTERN_LOAD
-//#include "esp32-javascript-config.h"
-#undef ESP32_JAVASCRIPT_EXTERN
+	for(int i = 0; i < 20; i++) {
+		fileChanged("");
+		vTaskDelay(500 / portTICK_PERIOD_MS);
+	
+	}
 
     jslog(INFO, "Reaching end of event loop.");
-
+abort();
     //Return from task is not allowed
     vTaskDelete(NULL);
 }
 
-void esp32_javascript_init() {
+duk_context* esp32_javascript_init() {
+
     esp_log_level_set("*", ESP_LOG_ERROR);
     esp_log_level_set("wifi", ESP_LOG_WARN);
     esp_log_level_set("dhcpc", ESP_LOG_WARN);
     esp_log_level_set(tag, LOG_LOCAL_LEVEL);
 
-    tcpip_adapter_init();
+  //  tcpip_adapter_init();
 
     el_event_queue = xQueueCreate(256, sizeof(js_eventlist_t));
-    jslog(INFO, "Free memory: %d bytes", esp_get_free_heap_size());
 
     xTaskCreatePinnedToCore(&duktape_task, "duktape_task", 24 * 1024, NULL, 5, &task, 0);
+    jslog(INFO, "UPPER Free memory: %d bytes", esp_get_free_heap_size());
+
+	return esp32JS;
 }
 
 
@@ -327,8 +352,8 @@ void esp32_javascript_init() {
 /////////////// shitty loggging 
 
 
-void fileLog(duk_context *esp32JS, log_level_t level, char *message)
-{
+void fileLog(duk_context *esp32JS, log_level_t level, char *message) {
+	
     if (level >= INFO)
     {
         // append to logfile
@@ -344,19 +369,21 @@ void fileLog(duk_context *esp32JS, log_level_t level, char *message)
     }
 }
 
-void jslog(log_level_t level, const char *msg, ...)
-{
-    if (level < (5 - LOG_LOCAL_LEVEL))
-    {
-        return;
-    }
-
+void jslog(log_level_t level, const char *msg, ...) {
     char *my_string;
     va_list argp;
 
     va_start(argp, msg);
     vasprintf(&my_string, msg, argp);
+	ESP_LOGW(tag, "%s", my_string);
+
     va_end(argp);
+
+
+    if (level < (5 - LOG_LOCAL_LEVEL))
+    {
+        return;
+    }
 
     TaskHandle_t current = xTaskGetCurrentTaskHandle();
 

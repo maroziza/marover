@@ -58,8 +58,8 @@ void createConsole(duk_context *ctx)
     duk_put_prop_string(ctx, obj_idx, "error");
 
 
-    duk_push_c_function(ctx, console_info_binding, 1 /*nargs*/);
-    duk_put_global_string(ctx, "print");
+  //  duk_push_c_function(ctx, console_info_binding, 1 /*nargs*/);
+  //  duk_put_global_string(ctx, "print");
 
 
 

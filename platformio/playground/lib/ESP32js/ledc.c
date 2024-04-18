@@ -78,14 +78,14 @@ static duk_ret_t el_ledcWrite(duk_context *ctx)
 
 void ledc_module_init(duk_context *ctx) {
 	#ifdef KEY_BUILTIN
-    duk_push_int(esp32JS, KEY_BUILTIN);
+    duk_push_int(ctx, KEY_BUILTIN);
 #else
     duk_push_undefined(ctx);
 #endif
     duk_put_global_string(ctx, "KEY_BUILTIN");
 
 #ifdef LED_BUILTIN
-    duk_push_int(esp32JS, LED_BUILTIN);
+    duk_push_int(ctx, LED_BUILTIN);
 #else
     duk_push_undefined(ctx);
 #endif

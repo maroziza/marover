@@ -68,7 +68,7 @@ void createConsole(duk_context *ctx);
 	duk_context* jsCreateContext();
     void loadJS(duk_context *ctx, const char *name, char *start, char *end);
 
-    void esp32_javascript_init();
+   // void esp32_javascript_init();
     bool isNativeOtaSupported();
 
 #ifdef __cplusplus

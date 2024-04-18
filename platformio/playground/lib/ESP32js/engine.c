@@ -79,10 +79,10 @@ bool spiramAvail()
 duk_context * jsCreateContext() {
 	duk_context * ctx;
 	spiramAvailable = spiramAvail();
-	if(spiramAvailable) {
+	//if(spiramAvailable) {
 	    ctx = duk_create_heap(duk_spiram_malloc, duk_spiram_realloc, duk_spiram_free, NULL, my_fatal);
-	} else {
+	//} else {
 		ctx = duk_create_heap_default();
-	}
+//	}
 	return ctx;
 }
