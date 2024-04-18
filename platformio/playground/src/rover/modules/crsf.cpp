@@ -1,11 +1,13 @@
 #include <modules.h>
 #include "crsf.h"
 #include <stdlib.h>
+#include "esp_log.h"
 
-#define SBUS_BUFFER_SIZE 128
+
+#define SBUS_BUFFER_SIZE 4096
 #define RXD2 16
 #define TXD2 17
-
+char *tag = "crsf";
 
 class CrsfModule : public Module { public:
 HardwareSerial *in;
@@ -23,12 +25,11 @@ virtual void setup() {
 
 virtual void loop() {
     if (!in->available()) return;
-    size_t numBytesRead = in->readBytes(_rcs_buf, SBUS_BUFFER_SIZE);
-    if(numBytesRead == 0) return;
-
+    size_t numBytesRead = in->read(_rcs_buf, SBUS_BUFFER_SIZE);
+    if(numBytesRead <= 0) return;
+    total+=numBytesRead;
     crsf_parse(&_rcs_buf[0], SBUS_BUFFER_SIZE, &_raw_rc_values[0], &_raw_rc_count, RC_INPUT_MAX_CHANNELS );
-
-
+    ESP_LOGW(tag, "Updaten. %d times, read %d bytes", i, numBytesRead);
 }
 
 };

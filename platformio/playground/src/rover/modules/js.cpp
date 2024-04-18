@@ -23,7 +23,7 @@ stats("DuktapeJS");
 int c  = 0;
 virtual void loop() {
 if(c == 0)   fileChanged("");
-if(c++>1000)c=0;
+if(c++>400)c=0;
 }
 
 
