@@ -65,6 +65,11 @@ void setup() {
     };
 
 
+ for (Module *m : modules)
+        m->setup();
+
+
+
   initCamera();
   stats("Camera");
   // try connect BT controller
