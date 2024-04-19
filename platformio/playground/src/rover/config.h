@@ -1,4 +1,6 @@
-// WIFI 
+// WIFI
+#define CONFIG_MAROVER_WIFI_HOSTNAME    "marover" // todo add board cash of some kind
+
 #define CONFIG_MAROVER_WIFI_STATION_ENABLED 1  //Connesct to your AP if 1, otherwise creates one
 
 #define CONFIG_MAROVER_WIFI_STATION_SSID "swan"
@@ -12,6 +14,8 @@
 
 //QuickJS engine enabled
 #define CONFIG_MAROVER_QUICK_JS 1
+#define CONFIG_MAROVER_PS3_JOY 1
+
 
 //WEB
 #define CONFIG_MAROVER_WEB_PORT 80
@@ -30,5 +34,5 @@
 
 #define CONfIG_MAROVER_CHASIS_PWM_FREQ 50
 #define CONfIG_MAROVER_CHASIS_PWM_RES 8
-//lower duty cycle % for pwm 
-#define CONfIG_MAROVER_CHASIS_PWM_START_DUTY_CYCLE_PERCENT 20 
+//lower duty cycle % for pwm
+#define CONfIG_MAROVER_CHASIS_PWM_START_DUTY_CYCLE_PERCENT 20

@@ -6,16 +6,17 @@
 #include "chasis.h"
 #include "soc/rtc_wdt.h"
 #include <Preferences.h>
-#include "esp32js.h"
 #include <ESPmDNS.h>
-#define HOSTNAME    "marover" // todo add board cash of some kind
 
 
 
 // Auto control modes for storage in preferences
+#if CONFIG_MAROVER_PS3_JOY
 #define STARTUP_CONTROL_MODE_BT_AUTO 1
-#define STARTUP_CONTROL_MODE_WIFI_AUTO 2
 #define STARTUP_CONTROL_MODE_BT_FORCED 10
+#endif
+
+#define STARTUP_CONTROL_MODE_WIFI_AUTO 2
 #define STARTUP_CONTROL_MODE_WIFI_FORCED 20
 
 Preferences preferences;
@@ -31,14 +32,13 @@ void stats(String msg)
 }
 
 std::vector<Module*> modules;
-//Marover rover;
+Marover rover;
 
 void setup() {
   // https://stackoverflow.com/questions/66278271/task-watchdog-got-triggered-the-tasks-did-not-reset-the-watchdog-in-time
   rtc_wdt_protect_off();    // Turns off the automatic wdt service
   //  rtc_wdt_enable();         // Turn it on manually
   //  rtc_wdt_set_time(RTC_WDT_STAGE0, 20000);
-Marover *rover = new Marover();
 
 
   Serial.begin(115200);
@@ -47,14 +47,14 @@ Marover *rover = new Marover();
   Serial.println(xPortGetCoreID());
   preferences.begin("startup_prefs", false);
 
-  initLight();
-#if CONFIG_MAROVER_CHASIS_MODE == CHASIS_MODE_DUMMY
-  initChasis();
-  stats("Chasis DUMMY");
-#elif CONFIG_MAROVER_CHASIS_MODE == CHASIS_MODE_PWM
-  initChasisPWMChannels();
-  stats("Chasis PWM");
-#endif
+  //~ initLight();
+//~ #if CONFIG_MAROVER_CHASIS_MODE == CHASIS_MODE_DUMMY
+  //~ initChasis();
+  //~ stats("Chasis DUMMY");
+//~ #elif CONFIG_MAROVER_CHASIS_MODE == CHASIS_MODE_PWM
+  //~ initChasisPWMChannels();
+  //~ stats("Chasis PWM");
+//~ #endif
 
   initFS();
   stats("FS");
@@ -67,8 +67,7 @@ Marover *rover = new Marover();
     };
 
 
- for (Module *m : modules)
-        m->setup(rover);
+    for (Module *m : modules) m->setup(&rover);
 
 
 
@@ -76,7 +75,9 @@ Marover *rover = new Marover();
   stats("Camera");
   // try connect BT controller
 
-  uint startup_control_mode = preferences.getUInt("boot_mode", STARTUP_CONTROL_MODE_BT_AUTO);
+  uint startup_control_mode =
+    STARTUP_CONTROL_MODE_WIFI_FORCED;
+//   preferences.getUInt("boot_mode", STARTUP_CONTROL_MODE_BT_AUTO);
   Serial.printf("Read startup mode preference: %d\n", startup_control_mode);
   if (startup_control_mode == STARTUP_CONTROL_MODE_BT_FORCED)
   {
@@ -110,7 +111,7 @@ Marover *rover = new Marover();
       Serial.println("Boot mode: STARTUP_CONTROL_MODE_WIFI_FORCED. Creating web services.");
     }
     startWifi(CONFIG_MAROVER_WIFI_STATION_TIMEOUT);
-    MDNS.begin(HOSTNAME);
+    MDNS.begin(CONFIG_MAROVER_WIFI_HOSTNAME);
 
     stats("WiFi");
 
@@ -128,7 +129,7 @@ Marover *rover = new Marover();
 //    initFileAsyncEndpoints(server);
     stats("Init Fileserver endpoints");
 
- //   initWebHTML(server);
+    initWebHTML(server);
     stats("Init static web resources");
 
  //   initWebSocketControlsV1(server);
@@ -151,8 +152,7 @@ void loop() {
 
 
 
-  if (IsRebootRequired)
-  {
+  if (IsRebootRequired) {
     Serial.println("Rebooting ESP32: ");
     delay(1000); // give time for reboot page to load
     ESP.restart();

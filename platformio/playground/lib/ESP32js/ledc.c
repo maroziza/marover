@@ -77,24 +77,24 @@ static duk_ret_t el_ledcWrite(duk_context *ctx)
 
 
 void ledc_module_init(duk_context *ctx) {
-	#ifdef KEY_BUILTIN
-    duk_push_int(ctx, KEY_BUILTIN);
-#else
-    duk_push_undefined(ctx);
-#endif
-    duk_put_global_string(ctx, "KEY_BUILTIN");
+//~ #ifdef KEY_BUILTIN
+    //~ duk_push_int(ctx, KEY_BUILTIN);
+//~ #else
+    //~ duk_push_undefined(ctx);
+//~ #endif
+    //~ duk_put_global_string(ctx, "KEY_BUILTIN");
 
-#ifdef LED_BUILTIN
-    duk_push_int(ctx, LED_BUILTIN);
-#else
-    duk_push_undefined(ctx);
-#endif
-    duk_put_global_string(ctx, "LED_BUILTIN");
+//~ #ifdef LED_BUILTIN
+    //~ duk_push_int(ctx, LED_BUILTIN);
+//~ #else
+    //~ duk_push_undefined(ctx);
+//~ #endif
+    //~ duk_put_global_string(ctx, "LED_BUILTIN");
 
 
-	
-	
-	duk_push_c_function(ctx, el_pinMode, 2 /*nargs*/);
+
+
+    duk_push_c_function(ctx, el_pinMode, 2 /*nargs*/);
     duk_put_global_string(ctx, "pinMode");
 
     duk_push_c_function(ctx, el_digitalRead, 1 /*nargs*/);
@@ -115,8 +115,8 @@ void ledc_module_init(duk_context *ctx) {
     duk_push_int(ctx, OUTPUT);
     duk_put_global_string(ctx, "OUTPUT");
 
-	
-	duk_push_c_function(ctx, el_ledcSetup, 3 /*nargs*/);
+
+    duk_push_c_function(ctx, el_ledcSetup, 3 /*nargs*/);
     duk_put_global_string(ctx, "ledcSetup");
 
     duk_push_c_function(ctx, el_ledcAttachPin, 2 /*nargs*/);
@@ -125,5 +125,5 @@ void ledc_module_init(duk_context *ctx) {
     duk_push_c_function(ctx, el_ledcWrite, 2 /*nargs*/);
     duk_put_global_string(ctx, "ledcWrite");
 
-	
+
 }
