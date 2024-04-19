@@ -31,12 +31,14 @@ void stats(String msg)
 }
 
 std::vector<Module*> modules;
+//Marover rover;
 
 void setup() {
   // https://stackoverflow.com/questions/66278271/task-watchdog-got-triggered-the-tasks-did-not-reset-the-watchdog-in-time
   rtc_wdt_protect_off();    // Turns off the automatic wdt service
   //  rtc_wdt_enable();         // Turn it on manually
   //  rtc_wdt_set_time(RTC_WDT_STAGE0, 20000);
+Marover *rover = new Marover();
 
 
   Serial.begin(115200);
@@ -66,7 +68,7 @@ void setup() {
 
 
  for (Module *m : modules)
-        m->setup();
+        m->setup(rover);
 
 
 
