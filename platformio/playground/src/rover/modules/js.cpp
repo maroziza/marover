@@ -71,10 +71,11 @@ void js_eval (const char *code) {
     duk_safe_to_string(ctx, -1);
   }
 
-  String res = duk_get_string(ctx, -1);
+  //String res = duk_get_string(ctx, -1);
 
-  Serial.printf("\n>>> Reslt: %s\n", res ? res : "null");
+//  Serial.printf("\n>>> Reslt: %s\n", res ? res : "null");
 
+  duk_pop(ctx);
   duk_pop(ctx);
 //  duk_destroy_heap(ctx);
 }
