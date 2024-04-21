@@ -15,6 +15,7 @@ ledcWrite(me, lev);
 a = chan(13);
 b = chan(12);
 c = chan(14);
+ledcSetup(next, 200, 11);
 
 
 
@@ -28,12 +29,15 @@ rcs = function() {
 cookie = 15;
 
 function loop() {
-var gas = (rc[2]-1010)<<3, diff = (rc[0] -1500)<<3;
+var gas = (rc[2]-1010)<<3, diff = (rc[3] -1500)<<3;
 if(gas<0) gas = 0;
 a(gas+diff);
 b(gas-diff);
+c(rc[0]); 
 print("RC1 ", rc[0],
+      "RC2 ", rc[1],
       "RC3 ", rc[2],
+      "RC4 ", rc[3], "\t\t",
       "GAS ", gas,
       "DIF ", diff,
       "LE1 ", (gas+diff),

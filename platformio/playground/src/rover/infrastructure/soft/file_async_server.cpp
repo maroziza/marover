@@ -245,13 +245,6 @@ void initFileAsyncEndpoints(AsyncWebServer *server)
 
   server->serveStatic("/admin/", LittleFS, "/admin/").setDefaultFile("index.html").setTemplateProcessor(server_string_processor);
 
-  server->on("/reboot", HTTP_GET, [](AsyncWebServerRequest *request)
-             {
-    String logmessage = "Client:" + request->client()->remoteIP().toString() + " " + request->url();
-    request->send(SPIFFS, "/admin/reboot.html", String(), false, server_string_processor);
-    logmessage += " Auth: Success";
-    Serial.println(logmessage);
-    IsRebootRequired = true; });
 
   // server->on("/directory", HTTP_GET, [](AsyncWebServerRequest * request)  {
   //   String logmessage = "Client:" + request->client()->remoteIP().toString() + " " + request->url();
@@ -286,7 +279,7 @@ void initFileAsyncEndpoints(AsyncWebServer *server)
         if (!SPIFFS.exists(fileName)) {
           Serial.println(logmessage + " ERROR: file does not exist");
           request->send(400, "text/plain", "ERROR: file does not exist");
-          } 
+          }
         else {
           Serial.println(logmessage + " file exists");
           if (strcmp(fileAction, "download") == 0) {
@@ -304,20 +297,20 @@ void initFileAsyncEndpoints(AsyncWebServer *server)
             request->send(response);
             SpiffsFile.close();
 
-            } 
-          else 
+            }
+          else
           if (strcmp(fileAction, "delete") == 0) {
             logmessage += " deleted";
             SPIFFS.remove(fileName);
             request->send(200, "text/plain", "Deleted File: " + String(fileName));
-            } 
+            }
           else {
             logmessage += " ERROR: invalid action param supplied";
             request->send(400, "text/plain", "ERROR: invalid action param supplied");
             }
           Serial.println(logmessage);
           }
-      } 
+      }
     else {
       request->send(400, "text/plain", "ERROR: name and action params required");
     } });

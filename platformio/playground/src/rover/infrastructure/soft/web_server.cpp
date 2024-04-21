@@ -8,8 +8,8 @@
 
 
 extern String WiFiAddr;
-AsyncWebServer *server = NULL;  
-        
+AsyncWebServer *server = NULL;
+
 
 static File SpiffsFile;
 
@@ -31,7 +31,7 @@ void server_not_found(AsyncWebServerRequest *request) {
   Serial.println(logmessage);
   request->send(404, "text/plain", "Not found");
 }
-  
+
 
 AsyncWebServer * web_server_init() {
   server = new AsyncWebServer(CONFIG_MAROVER_WEB_PORT);
@@ -39,9 +39,19 @@ AsyncWebServer * web_server_init() {
 }
 String url = "/dav";
 AsyncWebdav dav(url, LittleFS);
-
+extern bool IsRebootRequired;
 void web_server_start(){
     Serial.println("Starting Webserver ...");
+    server->on("/reboot", HTTP_GET, [](AsyncWebServerRequest *request) {
+        String logmessage = "Client:" + request->client()->remoteIP().toString() + " " + request->url();
+        request->send(LittleFS, "/autoexec.js", String(), false, NULL);
+        //~ request->send(LittleFS, "/admin/reboot.html", String(), false, NULL);
+        logmessage += " Auth: Success";
+        Serial.println(logmessage);
+        IsRebootRequired = true;
+    });
+
+
     server->addHandler(&dav);
     server->begin();
     Serial.print("Web http://");
