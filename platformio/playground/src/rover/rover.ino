@@ -59,16 +59,6 @@ void setup() {
   initFS();
   stats("FS");
 
-    modules = {
-        initCrsf(&Serial2),
-#if CONFIG_MAROVER_QUICK_JS
-        initDuktape(&Serial),
-#endif
-    };
-
-
-    for (Module *m : modules) m->setup(&rover);
-
 
 
   initCamera();
@@ -137,6 +127,19 @@ void setup() {
 
     web_server_start();
     stats("Web Server Started");
+
+
+      modules = {
+        initCrsf(&Serial2),
+#if CONFIG_MAROVER_QUICK_JS
+        initDuktape(&Serial),
+#endif
+
+    };
+
+initAll();
+
+
   }
   else
   {
@@ -144,12 +147,20 @@ void setup() {
     preferences.putUInt("boot_mode", STARTUP_CONTROL_MODE_BT_AUTO);
   }
 }
+boolean inited = false;
+
+void initAll() {
+    for (Module *m : modules) m->setup(&rover);
+    inited = true;
+}
 
 void loop() {
+      vTaskDelay(50 / portTICK_PERIOD_MS);
+
+if(inited)
     for (Module *m : modules)
         m->loop();
-
-
+else initAll();
 
 
   if (IsRebootRequired) {
@@ -159,7 +170,6 @@ void loop() {
   }
 
   // For timer, async, etc.
-  vTaskDelay(50 / portTICK_PERIOD_MS);
   // todo control
   webSocketControlsV1Loop();
 }

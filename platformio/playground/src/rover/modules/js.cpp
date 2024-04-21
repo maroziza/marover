@@ -9,6 +9,7 @@
 #define TAG  "dukjs"
 
 void ledc_module_init(duk_context *ctx);
+duk_context * jsCreateContext();
 
 
 class DuktapeModule : public Module { public:
@@ -24,7 +25,7 @@ class DuktapeModule : public Module { public:
 
     virtual void setup(Marover *rover) {
         this->rover = rover;
-        ctx = duk_create_heap_default();
+        ctx = jsCreateContext();
 
         ledc_module_init(ctx);
         bindRover();
@@ -53,8 +54,8 @@ static duk_ret_t js_native_print(duk_context *ctx) {
   duk_insert(ctx, 0);
   duk_join(ctx, duk_get_top(ctx) - 1);
   Serial.printf("%s", duk_to_string(ctx, -1));
-  duk_push_context_dump(ctx);
-  Serial.printf("|%s\n", duk_to_string(ctx, -1));
+  //duk_push_context_dump(ctx);
+//  Serial.printf("|%s\n", duk_to_string(ctx, -1));
 
 
   return 0;
@@ -71,11 +72,11 @@ void js_eval (const char *code) {
     duk_safe_to_string(ctx, -1);
   }
 
-  //String res = duk_get_string(ctx, -1);
+  String res = duk_get_string(ctx, -1);
 
-//  Serial.printf("\n>>> Reslt: %s\n", res ? res : "null");
+  Serial.printf("\n>>> Reslt: %s\n", res ? res : "null");
 
-  duk_pop(ctx);
+ // duk_pop(ctx);
   duk_pop(ctx);
 //  duk_destroy_heap(ctx);
 }
@@ -111,10 +112,14 @@ void js_eval (const char *code) {
 
 
         if(rover->rc[2]>0)rover->rc[2]--;
+        duk_gc(ctx ,0);
+        duk_gc(ctx,0);
+        // todo process events
+        //js_eval("loop();");
 
         // todo process events
         duk_get_global_string(ctx,"loop");
-        duk_call(ctx, 0);
+        duk_pcall(ctx, 0);
         duk_pop(ctx);
     }
 

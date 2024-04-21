@@ -4,6 +4,8 @@
 #include "duk_config.h"
 #include "duktape.h"
 #include "esp32-js-log.h"
+#include "esp_log.h"
+
 
 
 bool spiramAvailable = false;
@@ -77,12 +79,12 @@ bool spiramAvail()
     return false;
 }
 duk_context * jsCreateContext() {
-	duk_context * ctx;
-	spiramAvailable = spiramAvail();
-	//if(spiramAvailable) {
-	    ctx = duk_create_heap(duk_spiram_malloc, duk_spiram_realloc, duk_spiram_free, NULL, my_fatal);
-	//} else {
-		ctx = duk_create_heap_default();
-//	}
-	return ctx;
+    duk_context * ctx;
+    spiramAvailable = spiramAvail();
+    if(spiramAvailable) {
+        ctx = duk_create_heap(duk_spiram_malloc, duk_spiram_realloc, duk_spiram_free, NULL, my_fatal);
+    } else {
+        ctx = duk_create_heap_default();
+    }
+    return ctx;
 }

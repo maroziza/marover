@@ -6,7 +6,7 @@
 
 #define SBUS_BUFFER_SIZE 128
 #define RXD2 16
-#define TXD2 17
+#define TXD2 -1
 char *tag = "crsf";
 
 class CrsfModule : public Module { public:
@@ -19,7 +19,7 @@ class CrsfModule : public Module { public:
 
     virtual void setup(Marover*ro) {
         rover = ro;
-        in->begin(420000, SERIAL_8N1, TXD2, TXD2);
+        in->begin(420000, SERIAL_8N1, RXD2, TXD2);
         stats("Input - CRSF");
     }
 

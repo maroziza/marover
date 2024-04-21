@@ -30,14 +30,15 @@ cookie = 15;
 function loop() {
 var gas = (rc[2]-1010)<<3, diff = (rc[0] -1500)<<3;
 if(gas<0) gas = 0;
-if(diff<70)diff=10;
 a(gas+diff);
 b(gas-diff);
 print("RC1 ", rc[0],
-      "RC3 ", rc[1],
+      "RC3 ", rc[2],
       "GAS ", gas,
       "DIF ", diff,
       "LE1 ", (gas+diff),
-      "LE2 ", (gas-diff));;;
+      "LE2 ", (gas-diff), "\n"
+
+);
 
 }
