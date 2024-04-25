@@ -33,6 +33,7 @@ void stats(String msg)
 
 std::vector<Module*> modules;
 Marover rover;
+bool IsRebootRequired = false, IsInited = false;
 
 void setup() {
   // https://stackoverflow.com/questions/66278271/task-watchdog-got-triggered-the-tasks-did-not-reset-the-watchdog-in-time
@@ -137,9 +138,7 @@ void setup() {
 
     };
 
-initAll();
-
-
+//    initAll();
   }
   else
   {
@@ -147,17 +146,16 @@ initAll();
     preferences.putUInt("boot_mode", STARTUP_CONTROL_MODE_BT_AUTO);
   }
 }
-boolean inited = false;
 
 void initAll() {
     for (Module *m : modules) m->setup(&rover);
-    inited = true;
+    IsInited = true;
 }
 
 void loop() {
-      vTaskDelay(50 / portTICK_PERIOD_MS);
+      vTaskDelay(10 / portTICK_PERIOD_MS);
 
-if(inited)
+if(IsInited)
     for (Module *m : modules)
         m->loop();
 else initAll();

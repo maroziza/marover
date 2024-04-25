@@ -23,13 +23,14 @@ class DuktapeModule : public Module { public:
         reader = new SerialLineReader(s);
     }
 
-    virtual void setup(Marover *rover) {
+    virtual void setup(Marover *rover)
         this->rover = rover;
+        if(ctx == NULL) duk_destroy_heap(ctx);
         ctx = jsCreateContext();
-
         ledc_module_init(ctx);
         bindRover();
         bindFunctions();
+
         runAutoexec();
 
         stats("DuktapeJS");

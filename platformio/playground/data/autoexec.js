@@ -1,27 +1,36 @@
 var next = 0
 function chan(pin) {
-var me = ++next;
-print("LEDC: "+me+" pin:"+pin);
-ledcSetup(me, 800, 12);
-ledcAttachPin(pin, me);
+    var me = ++next;
+    print("LEDC: "+me+" pin:"+pin);
+    ledcSetup(me, 800, 12);
+    ledcAttachPin(pin, me);
+    return function(lev) {
+        if(lev<0) lev=0;
+        if(lev>4096)lev=4095;
+        ledcWrite(me, lev);
+    }
+}
+function servo(pin) {
+    var me = ++next;
+    print("SERVO: "+me+" pin:"+pin);
+    ledcSetup(me, 50, 16);
+    ledcAttachPin(pin, me);
+    return function(lev) {
+        lev *= 3.2;
+        ledcWrite(me, lev);
+    }
+}
 
 
-return function(lev) {
-if(lev<0) lev=0;
-if(lev>4096)lev=4095;
-ledcWrite(me, lev);
-}
-}
 a = chan(13);
 b = chan(12);
-c = chan(14);
-ledcSetup(next, 200, 11);
+c = servo(14);
 
 
 
 rcs = function() {
     var out = [];
-    for(var i = 0; i<rc.length;i++) 
+    for(var i = 0; i<rc.length;i++)
     out.push("\trc"+(i+1)+": "+rc[i]);
     out.push("\n");
     print(out.join(""));
@@ -33,8 +42,8 @@ var gas = (rc[2]-1010)<<3, diff = (rc[3] -1500)<<3;
 if(gas<0) gas = 0;
 a(gas+diff);
 b(gas-diff);
-c(rc[0]); 
-print("RC1 ", rc[0],
+c(rc[0]);
+if(false)print("RC1 ", rc[0],
       "RC2 ", rc[1],
       "RC3 ", rc[2],
       "RC4 ", rc[3], "\t\t",

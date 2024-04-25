@@ -39,18 +39,26 @@ AsyncWebServer * web_server_init() {
 }
 String url = "/dav";
 AsyncWebdav dav(url, LittleFS);
-extern bool IsRebootRequired;
+
+extern bool IsRebootRequired, IsInited;
+
 void web_server_start(){
     Serial.println("Starting Webserver ...");
     server->on("/reboot", HTTP_GET, [](AsyncWebServerRequest *request) {
         String logmessage = "Client:" + request->client()->remoteIP().toString() + " " + request->url();
-        request->send(LittleFS, "/autoexec.js", String(), false, NULL);
-        //~ request->send(LittleFS, "/admin/reboot.html", String(), false, NULL);
+        request->send(LittleFS, "/admin/reboot.html", String(), false, NULL);
         logmessage += " Auth: Success";
         Serial.println(logmessage);
         IsRebootRequired = true;
     });
 
+    server->on("/reinit", HTTP_GET, [](AsyncWebServerRequest *request) {
+        String logmessage = "Client:" + request->client()->remoteIP().toString() + " " + request->url();
+        request->send(LittleFS, "/autoexec.js", String(), false, NULL);
+        logmessage += " Auth: Success";
+        Serial.println(logmessage);
+        IsInited = true;
+    });
 
     server->addHandler(&dav);
     server->begin();

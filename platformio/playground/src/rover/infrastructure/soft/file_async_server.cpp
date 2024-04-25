@@ -16,7 +16,6 @@
 // https://github.com/har-in-air/ESP32_ASYNC_WEB_SERVER_SPIFFS_OTA
 
 static File SpiffsFile;
-bool IsRebootRequired = false;
 
 static String server_directory(bool ishtml = false);
 static void server_handle_upload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final);
