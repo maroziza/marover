@@ -1,6 +1,32 @@
 $fa = 1;
 $fs = 0.4;
 
+// Spikes number
+axle_number = 4; // [3:1:10]
+
+// Spikes thikness
+spike_width = 2; // [1:10]
+
+//@2024-04-23 01:19:10
+// Whel raidus         [mm]
+wheel_radius=16.5;
+// Wheel thikness      [mm]
+wheel_width=10;
+// We are going to make axle hole smaller on one side to
+// be able to fit two kind of motors with one wheel
+// Axle diameter big   [mm]
+axle_d = 3;
+// Axle diameter small [mm]
+axle_smaller_d = 2;
+
+// Stopper bolt Ø      [mm]
+stopper_bolt_d = 2.8;
+// Create stopper
+make_stopper_hole = false;
+
+
+
+
 
 module hub(hub_radius) {
   cylinder(h = wheel_width, r = hub_radius, center = true);
@@ -137,6 +163,7 @@ module hole_cutter(wheel_radius,
 module base_wheel(wheel_radius, wheel_width, axle_number, spike_width) {
   // Variables
   // Numbers are pure magic. If you need more/less rigid wheel - play here
+  // Export it to be configurable
   hub_radius = wheel_radius * 0.25;
   spikes_radius = wheel_radius * 0.85;
   rim_radius = wheel_radius;
@@ -155,11 +182,11 @@ module base_wheel(wheel_radius, wheel_width, axle_number, spike_width) {
 
 
 module complex_wheel(wheel_radius,        // Radius of the wheel       | mm
-                     wheel_width,         // Width of the "tyre"	   | mm
+                     wheel_width,         // Width of the "tyre"	     | mm
                      is_active,           // Active weel has a keyseat | true/false
                      axle_d,              // Ø of your engine axle     | mm
                      axle_smaller_d,      // Ø of small axle           | mm
-                     stopper_bolt_d,	  // Ø of the stopper bolt     | mm
+                     stopper_bolt_d,	    // Ø of the stopper bolt     | mm
                      axle_number,         // Number of spokes          | number
                      spike_width          // width of the spoke        | mm
                      ) {
@@ -179,21 +206,5 @@ module complex_wheel(wheel_radius,        // Radius of the wheel       | mm
     fillet_cutter(wheel_radius, wheel_width);
   }
 }
-
-// Taken from the original stl
-wheel_radius=14;
-wheel_width=10;
-
-// Taken from the last hardware rev.
-stopper_bolt_d = 2.8;
-// We are going to make axle hole smaller on one side to
-// be able to fit two kind of motors with one wheel
-axle_d = 3;
-axle_smaller_d = 2;
-
-// Fittable
-axle_number = 4;
-make_stopper_hole = false;
-spike_width = 1.1;
 
 complex_wheel(wheel_radius, wheel_width, true, axle_d, axle_smaller_d, stopper_bolt_d, axle_number, spike_width);
